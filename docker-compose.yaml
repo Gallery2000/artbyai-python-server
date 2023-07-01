@@ -1,0 +1,6 @@
+version: '3'
+services:
+  discord-bot:
+    image: discord-bot
+    container_name: discord-bot
+    build: .
