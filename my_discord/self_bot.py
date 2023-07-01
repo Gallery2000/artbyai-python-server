@@ -14,15 +14,23 @@ DIRECT_MESSAGE = "DirectMessage"
 
 
 def callback_discord(data: dict) -> None:
-    requests.post(BASE_URL + "/callback/discord", json=data)
+    response = requests.post(BASE_URL + "/callback/discord", json=data)
+    try:
+        response.raise_for_status()
+        res = response.json()
+        if res["code"] == 0:
+            logger.info("Callback Discord success")
+        else:
+            logger.error("Callback Discord error: " + res["msg"])
+    except requests.HTTPError as e:
+        logger.error("Callback Discord error: " + str(e))
 
 
 def update_discord_ssid(discord_id: int, session_id: str) -> None:
-    data = {
+    response = requests.patch(BASE_URL + "/manage/updateManDiscordSSID", json={
         "id": discord_id,
         "sessionId": session_id
-    }
-    response = requests.patch(BASE_URL + "/manage/updateManDiscordSSID", json=data)
+    })
     try:
         response.raise_for_status()
         res = response.json()
@@ -48,10 +56,10 @@ def get_all_discord() -> List[dict]:
 
 
 class SelfBot(discord.Client):
-    def __init__(self, channel_id: int, dm_channel_id: int):
+    def __init__(self, channel_id: str, dm_channel_id: str):
         super().__init__()
-        self.channel_id = channel_id
-        self.dm_channel_id = dm_channel_id
+        self.channel_id = int(channel_id)
+        self.dm_channel_id = int(dm_channel_id)
 
     async def on_ready(self):
         for session in self.sessions:
@@ -73,7 +81,7 @@ class SelfBot(discord.Client):
                     } for attachment in message.attachments
                 ],
                 "nonce": message.nonce,
-                "msgId": message.id,
+                "msgId": str(message.id),
             })
             return
         if message.channel.id != self.channel_id:
@@ -84,7 +92,7 @@ class SelfBot(discord.Client):
                 "type": FIRST_TRIGGER,
                 "content": message.content,
                 "nonce": message.nonce,
-                "msgId": message.id
+                "msgId": str(message.id),
             })
             return
 
@@ -101,7 +109,7 @@ class SelfBot(discord.Client):
                     ],
                     "content": message.content,
                     "nonce": message.nonce,
-                    "msgId": message.id
+                    "msgId": str(message.id),
                 })
                 return
 
@@ -110,7 +118,7 @@ class SelfBot(discord.Client):
                 "type": GENERATE_EDIT_ERROR,
                 "content": message.content,
                 "nonce": message.nonce,
-                "msgId": message.id
+                "msgId": str(message.id),
             })
             return
 
@@ -120,7 +128,7 @@ class SelfBot(discord.Client):
                     "type": RICH_TEXT,
                     "embeds": message.embeds,
                     "nonce": message.nonce,
-                    "msgId": message.id
+                    "msgId": str(message.id),
                 })
                 return
 
@@ -138,7 +146,7 @@ class SelfBot(discord.Client):
                         "type": RICH_TEXT,
                         "embeds": embeds,
                         "nonce": nonce,
-                        "msgId": payload.message_id
+                        "msgId": str(payload.message_id)
                     })
                     return
         except Exception as e:
