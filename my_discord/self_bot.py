@@ -66,7 +66,8 @@ class SelfBot(discord.Client):
             callback_discord({
                 "type": FIRST_TRIGGER,
                 "content": message.content,
-                "nonce": message.nonce
+                "nonce": message.nonce,
+                "msgId": message.id
             })
             return
 
@@ -82,7 +83,8 @@ class SelfBot(discord.Client):
                         } for attachment in message.attachments
                     ],
                     "content": message.content,
-                    "nonce": message.nonce
+                    "nonce": message.nonce,
+                    "msgId": message.id
                 })
                 return
 
@@ -90,7 +92,8 @@ class SelfBot(discord.Client):
             callback_discord({
                 "type": GENERATE_EDIT_ERROR,
                 "content": message.content,
-                "nonce": message.nonce
+                "nonce": message.nonce,
+                "msgId": message.id
             })
             return
 
@@ -99,7 +102,8 @@ class SelfBot(discord.Client):
                 callback_discord({
                     "type": RICH_TEXT,
                     "embeds": message.embeds,
-                    "nonce": message.nonce
+                    "nonce": message.nonce,
+                    "msgId": message.id
                 })
                 return
 
@@ -116,7 +120,8 @@ class SelfBot(discord.Client):
                     callback_discord({
                         "type": RICH_TEXT,
                         "embeds": embeds,
-                        "nonce": nonce
+                        "nonce": nonce,
+                        "msgId": payload.message_id
                     })
                     return
         except Exception as e:
