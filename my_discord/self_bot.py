@@ -10,6 +10,7 @@ FIRST_TRIGGER = "FirstTrigger"
 GENERATE_END = "GenerateEnd"
 GENERATE_EDIT_ERROR = "GenerateEditError"
 RICH_TEXT = "RichText"
+DIRECT_MESSAGE = "DirectMessage"
 
 
 def callback_discord(data: dict) -> None:
@@ -47,9 +48,10 @@ def get_all_discord() -> List[dict]:
 
 
 class SelfBot(discord.Client):
-    def __init__(self, channel_id: int):
+    def __init__(self, channel_id: int, dm_channel_id: int):
         super().__init__()
         self.channel_id = channel_id
+        self.dm_channel_id = dm_channel_id
 
     async def on_ready(self):
         for session in self.sessions:
@@ -58,6 +60,21 @@ class SelfBot(discord.Client):
 
     async def on_message(self, message):
         if message.author == self.user:
+            return
+        if message.channel.id == self.dm_channel_id:
+            callback_discord({
+                "type": DIRECT_MESSAGE,
+                "content": message.content,
+                "attachments": [
+                    {
+                        "url": attachment.url,
+                        "width": attachment.width,
+                        "height": attachment.height
+                    } for attachment in message.attachments
+                ],
+                "nonce": message.nonce,
+                "msgId": message.id,
+            })
             return
         if message.channel.id != self.channel_id:
             return
