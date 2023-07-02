@@ -126,9 +126,11 @@ class SelfBot(discord.Client):
             if message.embeds[0].type == "rich":
                 callback_discord({
                     "type": RICH_TEXT,
-                    "embeds": message.embeds,
+                    "embeds": [embed.to_dict() for embed in message.embeds],
                     "nonce": message.nonce,
                     "msgId": str(message.id),
+                    "flags": message.flags.value,
+                    "createAt": message.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                 })
                 return
 
