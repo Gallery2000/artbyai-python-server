@@ -56,23 +56,31 @@ def get_all_discord() -> List[dict]:
 
 
 class SelfBot(discord.Client):
-    def __init__(self, channel_id: str, dm_channel_id: str):
+    def __init__(self, discord_id: int, channel_id: str, dm_channel_id: str):
         super().__init__()
+        self.discord_id = int(discord_id)
         self.channel_id = int(channel_id)
         self.dm_channel_id = int(dm_channel_id)
 
     async def on_ready(self):
         for session in self.sessions:
-            update_discord_ssid(self.channel_id, session.session_id)
+            update_discord_ssid(self.discord_id, session.session_id)
             return
 
     async def on_message(self, message):
         if message.author == self.user:
             return
+        content = message.content
+        msg_id = str(message.id)
+        nonce = message.nonce
+        created_at = None
+        if message.created_at is not None:
+            created_at = message.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
         if message.channel.id == self.dm_channel_id:
             callback_discord({
                 "type": DIRECT_MESSAGE,
-                "content": message.content,
+                "content": content,
                 "attachments": [
                     {
                         "url": attachment.url,
@@ -80,19 +88,21 @@ class SelfBot(discord.Client):
                         "height": attachment.height
                     } for attachment in message.attachments
                 ],
-                "nonce": message.nonce,
-                "msgId": str(message.id),
+                "nonce": nonce,
+                "msgId": msg_id,
+                "createAt": created_at,
             })
             return
         if message.channel.id != self.channel_id:
             return
 
-        if "(Waiting to start)" in message.content and "Rerolling **" not in message.content:
+        if "(Waiting to start)" in content and "Rerolling **" not in content:
             callback_discord({
                 "type": FIRST_TRIGGER,
-                "content": message.content,
-                "nonce": message.nonce,
-                "msgId": str(message.id),
+                "content": content,
+                "nonce": nonce,
+                "msgId": msg_id,
+                "createAt": created_at,
             })
             return
 
@@ -107,18 +117,20 @@ class SelfBot(discord.Client):
                             "height": attachment.height
                         } for attachment in message.attachments
                     ],
-                    "content": message.content,
-                    "nonce": message.nonce,
-                    "msgId": str(message.id),
+                    "content": content,
+                    "nonce": nonce,
+                    "msgId": msg_id,
+                    "createAt": created_at,
                 })
                 return
 
-        if "(Stopped)" in message.content:
+        if "(Stopped)" in content:
             callback_discord({
                 "type": GENERATE_EDIT_ERROR,
-                "content": message.content,
-                "nonce": message.nonce,
-                "msgId": str(message.id),
+                "content": content,
+                "nonce": nonce,
+                "msgId": msg_id,
+                "createAt": created_at,
             })
             return
 
@@ -127,10 +139,10 @@ class SelfBot(discord.Client):
                 callback_discord({
                     "type": RICH_TEXT,
                     "embeds": [embed.to_dict() for embed in message.embeds],
-                    "nonce": message.nonce,
-                    "msgId": str(message.id),
+                    "nonce": nonce,
+                    "msgId": msg_id,
                     "flags": message.flags.value,
-                    "createAt": message.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                    "createAt": created_at,
                 })
                 return
 
