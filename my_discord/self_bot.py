@@ -48,6 +48,7 @@ def get_all_discord() -> List[dict]:
         response.raise_for_status()
         res = response.json()
         if res["code"] == 0:
+            logger.info("Get all Discord success")
             return res["data"]
         else:
             logger.error("Get all Discord error: " + res["msg"])
