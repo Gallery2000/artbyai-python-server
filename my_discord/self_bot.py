@@ -13,17 +13,17 @@ RICH_TEXT = "RichText"
 DIRECT_MESSAGE = "DirectMessage"
 
 
-def callback_discord(data: dict) -> None:
+def callback_discord(discord_id: int, data: dict) -> None:
     response = requests.post(BASE_URL + "/callback/discord", json=data)
     try:
         response.raise_for_status()
         res = response.json()
         if res["code"] == 0:
-            logger.info("Callback Discord success")
+            logger.info("Callback Discord " + str(discord_id) + " success")
         else:
-            logger.error("Callback Discord error: " + res["msg"])
+            logger.error("Callback Discord " + str(discord_id) + " error: " + res["msg"])
     except requests.HTTPError as e:
-        logger.error("Callback Discord error: " + str(e))
+        logger.error("Callback Discord " + str(discord_id) + " error: " + str(e))
 
 
 def update_discord_ssid(discord_id: int, session_id: str) -> None:
@@ -35,11 +35,11 @@ def update_discord_ssid(discord_id: int, session_id: str) -> None:
         response.raise_for_status()
         res = response.json()
         if res["code"] == 0:
-            logger.info("Update Discord SSID success")
+            logger.info("Update Discord " + str(discord_id) + " SSID success")
         else:
-            logger.error("Update Discord SSID error: %s", res["msg"])
+            logger.error("Update Discord " + str(discord_id) + " SSID error: %s", res["msg"])
     except requests.HTTPError as e:
-        logger.error("Update Discord SSID error: %s", str(e))
+        logger.error("Update Discord SSID " + str(discord_id) + " error: %s", str(e))
 
 
 def get_all_discord() -> List[dict]:
@@ -59,9 +59,9 @@ def get_all_discord() -> List[dict]:
 class SelfBot(discord.Client):
     def __init__(self, discord_id: int, channel_id: str, dm_channel_id: str):
         super().__init__()
-        self.discord_id = int(discord_id)
-        self.channel_id = int(channel_id)
-        self.dm_channel_id = int(dm_channel_id)
+        self.discord_id = discord_id
+        self.channel_id = channel_id
+        self.dm_channel_id = dm_channel_id
 
     async def on_ready(self):
         for session in self.sessions:
@@ -71,6 +71,7 @@ class SelfBot(discord.Client):
     async def on_message(self, message):
         if message.author == self.user:
             return
+        channel_id = str(message.channel.id)
         content = message.content
         msg_id = str(message.id)
         nonce = message.nonce
@@ -78,7 +79,7 @@ class SelfBot(discord.Client):
         if message.created_at is not None:
             created_at = message.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
-        if message.channel.id == self.dm_channel_id:
+        if channel_id == self.dm_channel_id:
             callback_discord({
                 "type": DIRECT_MESSAGE,
                 "content": content,
@@ -94,7 +95,7 @@ class SelfBot(discord.Client):
                 "createAt": created_at,
             })
             return
-        if message.channel.id != self.channel_id:
+        if channel_id != self.channel_id:
             return
 
         if "(Waiting to start)" in content and "Rerolling **" not in content:
@@ -151,7 +152,7 @@ class SelfBot(discord.Client):
         try:
             if payload.data['author']['id'] == self.user.id:
                 return
-            if payload.channel_id != self.channel_id:
+            if str(payload.channel_id) != self.channel_id:
                 return
             if payload.data['embeds']:
                 embeds = payload.data['embeds']

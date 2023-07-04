@@ -2,6 +2,7 @@ import os
 import threading
 
 from flask import Flask
+from loguru import logger
 
 from my_discord import reset_self_bots, existing_self_bots
 
@@ -10,6 +11,9 @@ app = Flask(__name__)
 
 @app.route('/reset-bots', methods=['POST'])
 def reset_bots_route():
+    if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+        logger.info("Resetting bots...")
+        threading.Thread(target=reset_self_bots, args=(existing_self_bots,)).start()
     return "Bots reset successfully."
 
 
