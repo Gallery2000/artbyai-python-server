@@ -11,6 +11,7 @@ GENERATE_END = "GenerateEnd"
 GENERATE_EDIT_ERROR = "GenerateEditError"
 RICH_TEXT = "RichText"
 DIRECT_MESSAGE = "DirectMessage"
+GENERATING = "Generating"
 
 
 def callback_discord(discord_id: int, data: dict) -> None:
@@ -80,7 +81,7 @@ class SelfBot(discord.Client):
             created_at = message.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
         if channel_id == self.dm_channel_id:
-            callback_discord({
+            callback_discord(self.discord_id, {
                 "type": DIRECT_MESSAGE,
                 "content": content,
                 "attachments": [
@@ -99,7 +100,7 @@ class SelfBot(discord.Client):
             return
 
         if "(Waiting to start)" in content and "Rerolling **" not in content:
-            callback_discord({
+            callback_discord(self.discord_id, {
                 "type": FIRST_TRIGGER,
                 "content": content,
                 "nonce": nonce,
@@ -110,7 +111,7 @@ class SelfBot(discord.Client):
 
         for attachment in message.attachments:
             if attachment.width > 0 and attachment.height > 0:
-                callback_discord({
+                callback_discord(self.discord_id, {
                     "type": GENERATE_END,
                     "attachments": [
                         {
@@ -127,7 +128,7 @@ class SelfBot(discord.Client):
                 return
 
         if "(Stopped)" in content:
-            callback_discord({
+            callback_discord(self.discord_id, {
                 "type": GENERATE_EDIT_ERROR,
                 "content": content,
                 "nonce": nonce,
@@ -138,7 +139,7 @@ class SelfBot(discord.Client):
 
         if message.embeds:
             if message.embeds[0].type == "rich":
-                callback_discord({
+                callback_discord(self.discord_id, {
                     "type": RICH_TEXT,
                     "embeds": [embed.to_dict() for embed in message.embeds],
                     "nonce": nonce,
@@ -154,15 +155,33 @@ class SelfBot(discord.Client):
                 return
             if str(payload.channel_id) != self.channel_id:
                 return
+            nonce = ""
+            created_at = None
+            if payload.cached_message is not None:
+                nonce = payload.cached_message.nonce
+                created_at = payload.cached_message.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
+            if payload.data['attachments']:
+                attachments = payload.data['attachments']
+                content = payload.data["content"]
+                callback_discord(self.discord_id, {
+                    "type": GENERATING,
+                    "attachments": attachments,
+                    "nonce": nonce,
+                    "content": content,
+                    "msgId": str(payload.message_id),
+                    "createdAt": created_at
+                })
+
             if payload.data['embeds']:
                 embeds = payload.data['embeds']
                 if embeds[0]['type'] == "rich":
-                    nonce = payload.cached_message.nonce
-                    callback_discord({
+                    callback_discord(self.discord_id, {
                         "type": RICH_TEXT,
                         "embeds": embeds,
                         "nonce": nonce,
-                        "msgId": str(payload.message_id)
+                        "msgId": str(payload.message_id),
+                        "createdAt": created_at
                     })
                     return
         except Exception as e:
