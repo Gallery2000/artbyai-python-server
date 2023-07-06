@@ -117,7 +117,8 @@ class SelfBot(discord.Client):
                     {
                         "url": attachment.url,
                         "width": attachment.width,
-                        "height": attachment.height
+                        "height": attachment.height,
+                        "size": attachment.size,
                     } for attachment in message.attachments
                 ]
             })
