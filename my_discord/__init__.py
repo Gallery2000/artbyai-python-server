@@ -1,3 +1,5 @@
+import threading
+
 from loguru import logger
 
 from .self_bot import SelfBot, update_discord_ssid, get_all_discord
@@ -34,7 +36,8 @@ def reset_self_bots(existing_self_bots):
                     self_bot.user_token = discord_data["userToken"]
                     logger.warning(f"User token updated for Discord account {self_bot.discord_id}")
                     try:
-                        self_bot.run(self_bot.user_token)
+                        my_thread = threading.Thread(target=self_bot.run, args=(self_bot.user_token,))
+                        my_thread.start()
                     except Exception as e:
                         logger.error(f"Error while restarting Discord account {self_bot.discord_id}: {e}")
             else:
@@ -43,6 +46,7 @@ def reset_self_bots(existing_self_bots):
                 logger.warning(f"Self bot for Discord account {discord_data['id']} has been added.")
                 existing_self_bots.append(self_bot)
                 try:
-                    self_bot.run(self_bot.user_token)
+                    my_thread = threading.Thread(target=self_bot.run, args=(self_bot.user_token,))
+                    my_thread.start()
                 except Exception as e:
                     logger.error(f"Error while restarting Discord account {self_bot.discord_id}: {e}")

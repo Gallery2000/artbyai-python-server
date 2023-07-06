@@ -109,7 +109,7 @@ class SelfBot(discord.Client):
             self.callback_message(FIRST_TRIGGER, msgId, nonce, content, createdAt, {})
         elif "(Stopped)" in content:
             self.callback_message(GENERATE_EDIT_ERROR, msgId, nonce, content, createdAt, {})
-        elif "/(`/fast`|`/relax`)" in content:
+        elif "/relax" in content or "/fast" in content:
             self.callback_message(RICH_TEXT, msgId, nonce, content, createdAt, {})
         elif message.attachments and any(att.width > 0 and att.height > 0 for att in message.attachments):
             self.callback_message(GENERATE_END, msgId, nonce, content, createdAt, {
@@ -129,6 +129,8 @@ class SelfBot(discord.Client):
 
     async def on_raw_message_edit(self, payload):
         try:
+            if payload.data is None:
+                return
             if payload.data['author']['id'] == self.user.id:
                 return
 
@@ -150,7 +152,7 @@ class SelfBot(discord.Client):
             self.callback_message(FIRST_TRIGGER, message_id, nonce, content, created_at, {})
         elif "(Stopped)" in content:
             self.callback_message(GENERATE_EDIT_ERROR, message_id, nonce, content, created_at, {})
-        elif "/(`/fast`|`/relax`)" in content:
+        elif "/relax" in content or "/fast" in content:
             self.callback_message(RICH_TEXT, message_id, nonce, content, created_at, {})
         elif payload.data['attachments']:
             self.callback_message(GENERATING, message_id, nonce, content, created_at, {
