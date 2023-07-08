@@ -69,64 +69,50 @@ class SelfBot(discord.Client):
             update_discord_ssid(self.discord_id, session.session_id)
             return
 
-    def callback_message(self, message_type, message_id, nonce, content, created_at, extra):
+    def callback_message(self, message_type, extra):
         """Helper function to construct callback message and execute callback."""
         callback_discord(self.discord_id, {
             **{
                 "type": message_type,
-                "content": content,
-                "nonce": nonce,
-                "msgId": message_id,
-                "createAt": created_at,
             }, **extra
         })
 
     async def on_message(self, message):
         if message.author == self.user:
             return
-
-        message_id = str(message.id)
-        nonce = message.nonce
-        content = message.content
-        created_at = message.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ") if message.created_at else None
+        msg_data = {
+            "msgId": str(message.id),
+            "nonce": message.nonce,
+            "content": message.content,
+            "createdAt": message.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ") if message.created_at else None,
+            "embeds": [embed.to_dict() for embed in message.embeds],
+            "attachments": [
+                {
+                    "url": attachment.url,
+                    "width": attachment.width,
+                    "height": attachment.height
+                } for attachment in message.attachments
+            ],
+            "referMsgId": str(message.reference.message_id) if message.reference else "",
+        }
 
         if str(message.channel.id) == self.dm_channel_id:
-            self.callback_message(DIRECT_MESSAGE, message_id, nonce, content, created_at, {
-                "attachments": [
-                    {
-                        "url": attachment.url,
-                        "width": attachment.width,
-                        "height": attachment.height
-                    } for attachment in message.attachments
-                ],
-            })
+            self.callback_message(DIRECT_MESSAGE, msg_data)
         elif str(message.channel.id) == self.channel_id:
-            self.handle_channel_message(message, message_id, nonce, content, created_at)
+            self.handle_channel_message(message, msg_data)
 
-    def handle_channel_message(self, message, msgId, nonce, content, createdAt):
+    def handle_channel_message(self, message, msg_data):
         """Handle messages for a specific channel id."""
-        if "(Waiting to start)" in content and "Rerolling **" not in content:
-            self.callback_message(FIRST_TRIGGER, msgId, nonce, content, createdAt, {})
-        elif "(Stopped)" in content:
-            self.callback_message(GENERATE_EDIT_ERROR, msgId, nonce, content, createdAt, {})
-        elif "/relax" in content or "/fast" in content:
-            self.callback_message(RICH_TEXT, msgId, nonce, content, createdAt, {})
+        if "(Waiting to start)" in message.content and "Rerolling **" not in message.content:
+            self.callback_message(FIRST_TRIGGER, msg_data)
+        elif "(Stopped)" in message.content:
+            self.callback_message(GENERATE_EDIT_ERROR, msg_data)
+        elif "/relax" in message.content or "/fast" in message.content:
+            self.callback_message(RICH_TEXT, msg_data)
         elif message.attachments and any(att.width > 0 and att.height > 0 for att in message.attachments):
-            self.callback_message(GENERATE_END, msgId, nonce, content, createdAt, {
-                "attachments": [
-                    {
-                        "url": attachment.url,
-                        "width": attachment.width,
-                        "height": attachment.height,
-                        "size": attachment.size,
-                    } for attachment in message.attachments
-                ]
-            })
+            self.callback_message(GENERATE_END, msg_data)
         elif message.embeds and message.embeds[0].type == "rich":
-            self.callback_message(RICH_TEXT, msgId, nonce, content, createdAt, {
-                "embeds": [embed.to_dict() for embed in message.embeds],
-                "flags": message.flags.value
-            })
+            self.callback_message(RICH_TEXT, msg_data)
 
     async def on_raw_message_edit(self, payload):
         try:
@@ -135,31 +121,33 @@ class SelfBot(discord.Client):
             if payload.data['author']['id'] == self.user.id:
                 return
 
-            message_id = str(payload.message_id)
-            nonce = "" if payload.cached_message is None else payload.cached_message.nonce
-            content = payload.data["content"]
-            created_at = None if payload.cached_message is None else payload.cached_message.created_at.strftime(
-                "%Y-%m-%dT%H:%M:%S.%fZ")
+            msg_data = {
+                "msgId": str(payload.message_id),
+                "nonce": "" if payload.cached_message is None else payload.cached_message.nonce,
+                "content": payload.data["content"],
+                "referMsgId": None if payload.cached_message is None else str(
+                    payload.cached_message.reference.message_id),
+                "createdAt": None if payload.cached_message is None else payload.cached_message.created_at.strftime(
+                    "%Y-%m-%dT%H:%M:%S.%fZ"),
+                "embeds": payload.data['embeds'],
+                "attachments": payload.data['attachments'],
+            }
 
             if str(payload.channel_id) == self.channel_id:
-                self.handle_edit_channel_message(payload, message_id, nonce, content, created_at)
+                self.handle_edit_channel_message(payload, msg_data)
 
         except Exception as e:
             logger.error(f"Error in on_raw_message_edit: {e}")
 
-    def handle_edit_channel_message(self, payload, message_id, nonce, content, created_at):
+    def handle_edit_channel_message(self, payload, msg_data):
         """Handle edited messages for a specific channel id."""
-        if "(Waiting to start)" in content and "Rerolling **" not in content:
-            self.callback_message(FIRST_TRIGGER, message_id, nonce, content, created_at, {})
-        elif "(Stopped)" in content:
-            self.callback_message(GENERATE_EDIT_ERROR, message_id, nonce, content, created_at, {})
-        elif "/relax" in content or "/fast" in content:
-            self.callback_message(RICH_TEXT, message_id, nonce, content, created_at, {})
+        if "(Waiting to start)" in msg_data["content"] and "Rerolling **" not in msg_data["content"]:
+            self.callback_message(FIRST_TRIGGER, msg_data)
+        elif "(Stopped)" in msg_data["content"]:
+            self.callback_message(GENERATE_EDIT_ERROR, msg_data)
+        elif "/relax" in msg_data["content"] or "/fast" in msg_data["content"]:
+            self.callback_message(RICH_TEXT, msg_data)
         elif payload.data['attachments']:
-            self.callback_message(GENERATING, message_id, nonce, content, created_at, {
-                "attachments": payload.data['attachments'],
-            })
+            self.callback_message(GENERATING, msg_data)
         elif payload.data['embeds'] and payload.data['embeds'][0]['type'] == "rich":
-            self.callback_message(RICH_TEXT, message_id, nonce, content, created_at, {
-                "embeds": payload.data['embeds'],
-            })
+            self.callback_message(RICH_TEXT, msg_data)
