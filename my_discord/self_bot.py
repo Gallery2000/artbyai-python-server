@@ -125,7 +125,7 @@ class SelfBot(discord.Client):
                 "msgId": str(payload.message_id),
                 "nonce": "" if payload.cached_message is None else payload.cached_message.nonce,
                 "content": payload.data["content"],
-                "referMsgId": None if payload.cached_message is None else str(
+                "referMsgId": None if payload.cached_message is None or payload.cached_message.reference is None else str(
                     payload.cached_message.reference.message_id),
                 "createdAt": None if payload.cached_message is None else payload.cached_message.created_at.strftime(
                     "%Y-%m-%dT%H:%M:%S.%fZ"),
