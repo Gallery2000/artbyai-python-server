@@ -58,11 +58,10 @@ def get_all_discord() -> List[dict]:
 
 
 class SelfBot(discord.Client):
-    def __init__(self, discord_id: int, channel_id: str, dm_channel_id: str):
+    def __init__(self, discord_id: int, channel_id: str):
         super().__init__()
         self.discord_id = discord_id
         self.channel_id = channel_id
-        self.dm_channel_id = dm_channel_id
 
     async def on_ready(self):
         for session in self.sessions:
@@ -93,8 +92,21 @@ class SelfBot(discord.Client):
                     "height": attachment.height
                 } for attachment in message.attachments
             ],
+            "components": [],
             "referMsgId": str(message.reference.message_id) if message.reference else "",
         }
+
+        while len(msg_data["components"]) < len(message.components):
+            msg_data["components"].append({})
+
+        for i, component in enumerate(message.components):
+            msg_data["components"][i]["children"] = []
+            for button in component.children:
+                msg_data["components"][i]["children"].append({
+                    "emoji": button.emoji.name if button.emoji else None,
+                    "label": button.label,
+                    "custom_id": button.custom_id,
+                })
 
         if str(message.channel.id) == self.dm_channel_id:
             self.callback_message(DIRECT_MESSAGE, msg_data)
@@ -131,7 +143,20 @@ class SelfBot(discord.Client):
                     "%Y-%m-%dT%H:%M:%S.%fZ"),
                 "embeds": payload.data['embeds'],
                 "attachments": payload.data['attachments'],
+                "components": [],
             }
+
+            while len(msg_data["components"]) < len(payload.data["components"]):
+                msg_data["components"].append({})
+
+            for i, component in enumerate(payload.data["components"]):
+                msg_data["components"][i]["children"] = []
+                for button in component["components"]:
+                    msg_data["components"][i]["children"].append({
+                        "label": button["label"] if "label" in button else "",
+                        "emoji": button["emoji"]["name"] if "emoji" in button and button["emoji"] else None,
+                        "custom_id": button["custom_id"],
+                    })
 
             if str(payload.channel_id) == self.channel_id:
                 self.handle_edit_channel_message(payload, msg_data)
