@@ -58,10 +58,11 @@ def get_all_discord() -> List[dict]:
 
 
 class SelfBot(discord.Client):
-    def __init__(self, discord_id: int, channel_id: str):
+    def __init__(self, discord_id: int, channel_id: str, dm_channel_id: str):
         super().__init__()
         self.discord_id = discord_id
         self.channel_id = channel_id
+        self.dm_channel_id = dm_channel_id
 
     async def on_ready(self):
         for session in self.sessions:

@@ -41,7 +41,7 @@ def reset_self_bots(existing_self_bots):
                     except Exception as e:
                         logger.error(f"Error while restarting Discord account {self_bot.discord_id}: {e}")
             else:
-                self_bot = SelfBot(discord_data["id"], discord_data["channelId"])
+                self_bot = SelfBot(discord_data["id"], discord_data["channelId"], discord_data["dmChannelId"], )
                 self_bot.user_token = discord_data["userToken"]
                 logger.warning(f"Self bot for Discord account {discord_data['id']} has been added.")
                 existing_self_bots.append(self_bot)
