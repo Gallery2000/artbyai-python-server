@@ -5,13 +5,14 @@ import requests
 from loguru import logger
 
 BASE_URL = "http://127.0.0.1:8888"
-
+PLAINTEXT = "PlainText"
 FIRST_TRIGGER = "FirstTrigger"
 GENERATE_END = "GenerateEnd"
 GENERATE_EDIT_ERROR = "GenerateEditError"
 RICH_TEXT = "RichText"
 DIRECT_MESSAGE = "DirectMessage"
 GENERATING = "Generating"
+INTERACTION_FINISH = "InteractionFinish"
 
 
 def callback_discord(discord_id: int, data: dict) -> None:
@@ -69,6 +70,12 @@ class SelfBot(discord.Client):
             update_discord_ssid(self.discord_id, session.session_id)
             return
 
+    async def on_interaction(self, interaction):
+        self.callback_message(INTERACTION_FINISH, {
+            "id": interaction.id,
+            "nonce": interaction.nonce,
+        })
+
     def callback_message(self, message_type, extra):
         """Helper function to construct callback message and execute callback."""
         callback_discord(self.discord_id, {
@@ -121,7 +128,9 @@ class SelfBot(discord.Client):
         elif "(Stopped)" in message.content:
             self.callback_message(GENERATE_EDIT_ERROR, msg_data)
         elif "/relax" in message.content or "/fast" in message.content:
-            self.callback_message(RICH_TEXT, msg_data)
+            self.callback_message(PLAINTEXT, msg_data)
+        elif "/prefer remix" in message.content:
+            self.callback_message(PLAINTEXT, msg_data)
         elif message.attachments and any(att.width > 0 and att.height > 0 for att in message.attachments):
             self.callback_message(GENERATE_END, msg_data)
         elif message.embeds and message.embeds[0].type == "rich":
@@ -173,6 +182,8 @@ class SelfBot(discord.Client):
             self.callback_message(GENERATE_EDIT_ERROR, msg_data)
         elif "/relax" in msg_data["content"] or "/fast" in msg_data["content"]:
             self.callback_message(RICH_TEXT, msg_data)
+        elif "/prefer remix" in msg_data["content"]:
+            self.callback_message(PLAINTEXT, msg_data)
         elif payload.data['attachments']:
             self.callback_message(GENERATING, msg_data)
         elif payload.data['embeds'] and payload.data['embeds'][0]['type'] == "rich":
