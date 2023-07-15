@@ -145,7 +145,7 @@ class MyClient(discord.Client):
         elif "(Stopped)" in msg_data["content"]:
             self.callback_message(GENERATE_EDIT_ERROR, msg_data)
         elif "/relax" in msg_data["content"] or "/fast" in msg_data["content"]:
-            self.callback_message(RICH_TEXT, msg_data)
+            self.callback_message(PLAINTEXT, msg_data)
         elif "/prefer remix" in msg_data["content"]:
             self.callback_message(PLAINTEXT, msg_data)
         elif payload.data['attachments']:
