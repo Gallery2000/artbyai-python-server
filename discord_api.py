@@ -7,8 +7,8 @@ class DiscordApi:
         self.base_url = base_url
 
     def callback_discord(self, discord_id: int, data: dict) -> None:
-        response = requests.post(self.base_url + "/callback/discord", json=data)
         try:
+            response = requests.post(self.base_url + "/callback/discord", json=data)
             response.raise_for_status()
             res = response.json()
             if res["code"] == 0:
@@ -19,11 +19,11 @@ class DiscordApi:
             logger.error("Callback Discord " + str(discord_id) + " error: " + str(e))
 
     def update_discord_ssid(self, discord_id: int, session_id: str) -> None:
-        response = requests.patch(self.base_url + "/manage/updateManDiscordSSID", json={
-            "id": discord_id,
-            "sessionId": session_id
-        })
         try:
+            response = requests.patch(self.base_url + "/manage/updateManDiscordSSID", json={
+                "id": discord_id,
+                "sessionId": session_id
+            })
             response.raise_for_status()
             res = response.json()
             if res["code"] == 0:
@@ -34,10 +34,10 @@ class DiscordApi:
             logger.error("Update Discord SSID " + str(discord_id) + " error: %s", str(e))
 
     def get_discord(self, discord_id: int) -> dict:
-        response = requests.get(self.base_url + "/manage/getManDiscord", params={
-            "id": discord_id
-        })
         try:
+            response = requests.get(self.base_url + "/manage/getManDiscord", params={
+                "id": discord_id
+            })
             response.raise_for_status()
             res = response.json()
             if res["code"] == 0:
