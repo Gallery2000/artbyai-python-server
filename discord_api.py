@@ -31,9 +31,9 @@ class DiscordApi:
             if res["code"] == 0:
                 logger.info("Update Discord " + str(discord_id) + " SSID success")
             else:
-                logger.error("Update Discord " + str(discord_id) + " SSID error: %s", res["msg"])
+                logger.error("Update Discord " + str(discord_id) + " SSID error: " + res["msg"])
         except requests.HTTPError as e:
-            logger.error("Update Discord SSID " + str(discord_id) + " error: %s", str(e))
+            logger.error("Update Discord SSID " + str(discord_id) + " error: " + str(e))
         except Exception as e:
             logger.error("Callback Discord " + str(discord_id) + " error: " + str(e))
 
