@@ -17,6 +17,8 @@ class DiscordApi:
                 logger.error("Callback Discord " + str(discord_id) + " error: " + res["msg"])
         except requests.HTTPError as e:
             logger.error("Callback Discord " + str(discord_id) + " error: " + str(e))
+        except Exception as e:
+            logger.error("Callback Discord " + str(discord_id) + " error: " + str(e))
 
     def update_discord_ssid(self, discord_id: int, session_id: str) -> None:
         try:
@@ -32,6 +34,8 @@ class DiscordApi:
                 logger.error("Update Discord " + str(discord_id) + " SSID error: %s", res["msg"])
         except requests.HTTPError as e:
             logger.error("Update Discord SSID " + str(discord_id) + " error: %s", str(e))
+        except Exception as e:
+            logger.error("Callback Discord " + str(discord_id) + " error: " + str(e))
 
     def get_discord(self, discord_id: int) -> dict:
         try:
@@ -47,3 +51,5 @@ class DiscordApi:
                 logger.error("Get Discord " + str(discord_id) + " error: " + res["msg"])
         except requests.HTTPError as e:
             logger.error("Get Discord " + str(discord_id) + " error: " + str(e))
+        except Exception as e:
+            logger.error("Callback Discord " + str(discord_id) + " error: " + str(e))

@@ -129,7 +129,7 @@ class MyClient(discord.Client):
                     msg_data["components"][i]["children"].append({
                         "label": button["label"] if "label" in button else "",
                         "emoji": button["emoji"]["name"] if "emoji" in button and button["emoji"] else None,
-                        "custom_id": button["custom_id"],
+                        "custom_id": button["custom_id"] if "custom_id" in button else "",
                     })
 
             if str(payload.channel_id) == self.channel_id:
