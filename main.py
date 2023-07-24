@@ -98,6 +98,8 @@ class MyClient(discord.Client):
             self.callback_message(GENERATE_END, msg_data)
         elif message.embeds and message.embeds[0].type == "rich":
             self.callback_message(RICH_TEXT, msg_data)
+        elif message.content:
+            self.callback_message(PLAINTEXT, msg_data)
 
     async def on_raw_message_edit(self, payload):
         try:
@@ -152,6 +154,8 @@ class MyClient(discord.Client):
             self.callback_message(GENERATING, msg_data)
         elif payload.data['embeds'] and payload.data['embeds'][0]['type'] == "rich":
             self.callback_message(RICH_TEXT, msg_data)
+        elif msg_data["content"]:
+            self.callback_message(PLAINTEXT, msg_data)
 
     async def on_interaction_finish(self, interaction):
         my_thread = threading.Thread(target=self.callback_message, args=(INTERACTION_FINISH, {
