@@ -4,3 +4,4 @@ services:
     image: discord-bot
     container_name: discord-bot
     build: .
+

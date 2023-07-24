@@ -6,6 +6,22 @@ class DiscordApi:
     def __init__(self, base_url):
         self.base_url = base_url
 
+    def trigger_time(self, discord_id: int) -> None:
+        try:
+            response = requests.post(self.base_url + "/manage/updateTriggerTime", json={
+                "id": discord_id,
+            })
+            response.raise_for_status()
+            res = response.json()
+            if res["code"] == 0:
+                logger.info("Trigger Discord " + str(discord_id) + " success")
+            else:
+                logger.error("Trigger Discord " + str(discord_id) + " error: " + res["msg"])
+        except requests.HTTPError as e:
+            logger.error("Trigger Discord " + str(discord_id) + " error: " + str(e))
+        except Exception as e:
+            logger.error("Trigger Discord " + str(discord_id) + " error: " + str(e))
+
     def callback_discord(self, discord_id: int, data: dict) -> None:
         try:
             response = requests.post(self.base_url + "/callback/discord", json=data)
@@ -22,7 +38,7 @@ class DiscordApi:
 
     def update_discord_ssid(self, discord_id: int, session_id: str) -> None:
         try:
-            response = requests.patch(self.base_url + "/manage/updateManDiscordSSID", json={
+            response = requests.post(self.base_url + "/manage/updateManDiscordSSID", json={
                 "id": discord_id,
                 "sessionId": session_id
             })

@@ -1,4 +1,5 @@
 import threading
+import time
 
 import discord
 from loguru import logger
@@ -26,6 +27,12 @@ if not discord_data:
     exit(1)
 
 
+def schedule_function(discord_id):
+    while True:
+        discord_api.trigger_time(discord_id)
+        time.sleep(60)
+
+
 class MyClient(discord.Client):
     def __init__(self, discord_id: int, channel_id: str, dm_channel_id: str):
         super().__init__()
@@ -34,6 +41,10 @@ class MyClient(discord.Client):
         self.dm_channel_id = dm_channel_id
 
     async def on_ready(self):
+        timer_thread = threading.Thread(target=schedule_function, args=(self.discord_id,))
+        timer_thread.daemon = True
+        timer_thread.start()
+        
         for session in self.sessions:
             discord_api.update_discord_ssid(self.discord_id, session.session_id)
             return
