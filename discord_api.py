@@ -1,6 +1,8 @@
 import requests
 from loguru import logger
 
+TIME_OUT_SECONDS = 10
+
 
 class DiscordApi:
     def __init__(self, base_url):
@@ -10,7 +12,7 @@ class DiscordApi:
         try:
             response = requests.post(self.base_url + "/manage/updateTriggerTime", json={
                 "id": discord_id,
-            })
+            }, timeout=TIME_OUT_SECONDS)
             response.raise_for_status()
             res = response.json()
             if res["code"] == 0:
@@ -19,12 +21,15 @@ class DiscordApi:
                 logger.error("Trigger Discord " + str(discord_id) + " error: " + res["msg"])
         except requests.HTTPError as e:
             logger.error("Trigger Discord " + str(discord_id) + " error: " + str(e))
+        except requests.exceptions.RequestException as e:
+            print("Error during request:" + str(e))
         except Exception as e:
             logger.error("Trigger Discord " + str(discord_id) + " error: " + str(e))
 
     def callback_discord(self, discord_id: int, data: dict) -> None:
+        print(data)
         try:
-            response = requests.post(self.base_url + "/callback/discord", json=data)
+            response = requests.post(self.base_url + "/callback/discord", json=data, timeout=TIME_OUT_SECONDS)
             response.raise_for_status()
             res = response.json()
             if res["code"] == 0:
@@ -33,6 +38,8 @@ class DiscordApi:
                 logger.error("Callback Discord " + str(discord_id) + " error: " + res["msg"])
         except requests.HTTPError as e:
             logger.error("Callback Discord " + str(discord_id) + " error: " + str(e))
+        except requests.exceptions.RequestException as e:
+            print("Error during request:" + str(e))
         except Exception as e:
             logger.error("Callback Discord " + str(discord_id) + " error: " + str(e))
 
@@ -41,7 +48,7 @@ class DiscordApi:
             response = requests.post(self.base_url + "/manage/updateManDiscordSSID", json={
                 "id": discord_id,
                 "sessionId": session_id
-            })
+            }, timeout=TIME_OUT_SECONDS)
             response.raise_for_status()
             res = response.json()
             if res["code"] == 0:
@@ -50,6 +57,8 @@ class DiscordApi:
                 logger.error("Update Discord " + str(discord_id) + " SSID error: " + res["msg"])
         except requests.HTTPError as e:
             logger.error("Update Discord SSID " + str(discord_id) + " error: " + str(e))
+        except requests.exceptions.RequestException as e:
+            print("Error during request:" + str(e))
         except Exception as e:
             logger.error("Callback Discord " + str(discord_id) + " error: " + str(e))
 
@@ -57,7 +66,7 @@ class DiscordApi:
         try:
             response = requests.get(self.base_url + "/manage/getManDiscord", params={
                 "id": discord_id
-            })
+            }, timeout=TIME_OUT_SECONDS)
             response.raise_for_status()
             res = response.json()
             if res["code"] == 0:
@@ -67,5 +76,7 @@ class DiscordApi:
                 logger.error("Get Discord " + str(discord_id) + " error: " + res["msg"])
         except requests.HTTPError as e:
             logger.error("Get Discord " + str(discord_id) + " error: " + str(e))
+        except requests.exceptions.RequestException as e:
+            print("Error during request:" + str(e))
         except Exception as e:
             logger.error("Callback Discord " + str(discord_id) + " error: " + str(e))

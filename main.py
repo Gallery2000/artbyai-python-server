@@ -44,7 +44,7 @@ class MyClient(discord.Client):
         timer_thread = threading.Thread(target=schedule_function, args=(self.discord_id,))
         timer_thread.daemon = True
         timer_thread.start()
-        
+
         for session in self.sessions:
             discord_api.update_discord_ssid(self.discord_id, session.session_id)
             return
@@ -115,6 +115,8 @@ class MyClient(discord.Client):
     async def on_raw_message_edit(self, payload):
         try:
             if payload.data is None:
+                return
+            if payload.data['author'] is None:
                 return
             if payload.data['author']['id'] == self.user.id:
                 return
