@@ -27,7 +27,6 @@ class DiscordApi:
             logger.error("Trigger Discord " + str(discord_id) + " error: " + str(e))
 
     def callback_discord(self, discord_id: int, data: dict) -> None:
-        print(data)
         try:
             response = requests.post(self.base_url + "/callback/discord", json=data, timeout=TIME_OUT_SECONDS)
             response.raise_for_status()
