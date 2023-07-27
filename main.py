@@ -76,6 +76,7 @@ class MyClient(discord.Client):
             "components": [],
             "referMsgId": str(message.reference.message_id) if message.reference else "",
             "discordId": self.discord_id,
+            "flags": message.flags.value,
         }
 
         while len(msg_data["components"]) < len(message.components):
@@ -125,6 +126,7 @@ class MyClient(discord.Client):
                 "msgId": str(payload.message_id),
                 "nonce": "" if payload.cached_message is None else payload.cached_message.nonce,
                 "content": payload.data["content"],
+                "flags": payload.data["flags"],
                 "referMsgId": None if payload.cached_message is None or payload.cached_message.reference is None else str(
                     payload.cached_message.reference.message_id),
                 "createdAt": None if payload.cached_message is None else payload.cached_message.created_at.strftime(
