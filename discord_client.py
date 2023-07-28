@@ -1,5 +1,4 @@
 import threading
-import time
 
 import discord
 from loguru import logger
@@ -21,11 +20,6 @@ class MyClient(discord.Client):
         self.channel_id = channel_id
         self.dm_channel_id = dm_channel_id
         self.api = discord_api
-
-    async def trigger_time(self):
-        while True:
-            self.api.trigger_time(self.discord_id)
-            time.sleep(60)
 
     async def on_ready(self):
         for session in self.sessions:

@@ -18,9 +18,10 @@ if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
         exit(1)
 
     client = MyClient(discord_data["id"], discord_data["channelId"], discord_data["dmChannelId"], discord_api)
-    timer_thread = threading.Thread(target=client.run, args=(discord_data["userToken"],))
-    timer_thread.daemon = True
-    timer_thread.start()
+
+    bot_thread = threading.Thread(target=client.run, args=(discord_data["userToken"],))
+    bot_thread.daemon = True
+    bot_thread.start()
 
 if __name__ == '__main__':
     app.run(debug=True, port=config["port"])
