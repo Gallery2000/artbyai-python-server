@@ -50,7 +50,7 @@ def get_all_data():
     else:
         return jsonify({"code": 1, "msg": "unknown type"})
 
-    if err:
-        return jsonify({"code": 1, "msg": err})
+    if err is not None:
+        return jsonify({"code": 1, "msg": str(err)})
 
     return jsonify({"code": 0, "msg": "success"})

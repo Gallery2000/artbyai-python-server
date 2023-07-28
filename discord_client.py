@@ -1,4 +1,3 @@
-import asyncio
 import threading
 import time
 
@@ -29,8 +28,6 @@ class MyClient(discord.Client):
             time.sleep(60)
 
     async def on_ready(self):
-        asyncio.create_task(self.trigger_time())
-
         for session in self.sessions:
             self.api.update_discord_ssid(self.discord_id, session.session_id)
             return

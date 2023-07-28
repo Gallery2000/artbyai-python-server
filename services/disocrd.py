@@ -1,8 +1,10 @@
+import json
 import os
 import re
 
 import requests
 
+INTERACTIONS_URL = "https://discord.com/api/v9/interactions"
 APPLICATION_ID = "936929561302675456"
 
 REMIX_TYPE = "Remix by"
@@ -12,27 +14,6 @@ PAN_LEFT_TYPE = "Pan Left by"
 PAN_RIGHT_TYPE = "Pan Right by"
 PAN_DOWN_TYPE = "Pan Down by"
 PAN_UP_TYPE = "Pan Up by"
-
-
-def req_midJourney(data, uri, token):
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": token,
-    }
-
-    try:
-        response = requests.post(uri, json=data, headers=headers)
-        res = response.json()
-        response.raise_for_status()
-    except requests.exceptions.RequestException as e:
-        return None, e
-
-    if res.get("message"):
-        if res.get("errors") and res["errors"]["data"]["errors"]:
-            return None, Exception(res["errors"]["data"]["errors"][0]["message"])
-        return None, Exception(res["message"])
-
-    return res, None
 
 
 def get_data_custom(params):
@@ -60,58 +41,59 @@ def get_data_custom(params):
     return data_custom_id, com_custom_id
 
 
-def req_midjourney(data, token, channel_id):
+def req_midjourney(data, token):
     headers = {
         "Content-Type": "application/json",
         "Authorization": token,
     }
-
-    uri = f"https://discord.com/api/v9/channels/{channel_id}/messages"
-
+    print(json.dumps(data))
     try:
-        response = requests.post(uri, json=data, headers=headers)
+        response = requests.post(INTERACTIONS_URL, json=data, headers=headers)
         response.raise_for_status()
-        res = response.json()
-        if res["Message"] != "":
-            if res["Errors"]["Data"]["Errors"] is not None:
-                raise Exception(res["Errors"]["Data"]["Errors"][0]["Message"])
-            raise Exception(res["Message"])
+        if response.text:
+            data = response.json()  # 解析JSON数据
+        else:
+            data = {}  # 响应为空，使用空字典表示空数据
+        print(data)
         return response.content, None
     except requests.exceptions.RequestException as e:
+        return None, e
+    except json.JSONDecodeError as e:
         return None, e
 
 
 class DiscordService:
     def generate_image(self, params):
         request_body = {
-            "Type": 2,
-            "GuildID": params["guildId"],
-            "ChannelID": params["channelId"],
-            "ApplicationId": APPLICATION_ID,
-            "SessionId": params["sessionId"],
-            "Nonce": params["nonce"],
-            "Data": {
-                "Version": "1118961510123847772",
-                "Id": "938956540159881230",
-                "Name": "imagine",
-                "Type": 1,
-                "Options": [{"Type": 3, "Name": "prompt", "Value": params["prompt"]}],
-                "ApplicationCommand": {
-                    "Id": "938956540159881230",
-                    "ApplicationId": APPLICATION_ID,
-                    "Version": "1118961510123847772",
-                    "Contexts": [1, 2, 3],
-                    "DefaultPermission": True,
-                    "DefaultMemberPermissions": None,
-                    "Type": 1,
-                    "Nsfw": False,
-                    "Name": "imagine",
-                    "Description": "Create images with Midjourney",
-                    "DmPermission": True,
-                    "Options": [
-                        {"Type": 3, "Name": "prompt", "Description": "The prompt to imagine", "Required": True}],
+            "type": 2,
+            "guild_id": params["guildId"],
+            "channel_id": params["channelId"],
+            "application_id": APPLICATION_ID,
+            "session_id": params["sessionId"],
+            "nonce": params["nonce"],
+            "data": {
+                "version": "1118961510123847772",
+                "id": "938956540159881230",
+                "name": "imagine",
+                "type": 1,
+                "options": [{"type": 3, "name": "prompt", "value": params["prompt"]}],
+                "application_command": {
+                    "id": "938956540159881230",
+                    "application_id": APPLICATION_ID,
+                    "version": "1118961510123847772",
+                    "contexts": [1, 2, 3],
+                    "default_permission": True,
+                    "default_member_permissions": None,
+                    "type": 1,
+                    "nsfw": False,
+                    "name": "imagine",
+                    "description": "Create images with Midjourney",
+                    "dm_permission": True,
+                    "options": [
+                        {"type": 3, "name": "prompt", "description": "The prompt to imagine", "required": True}
+                    ]
                 },
-                "Attachments": [],
+                "attachments": []
             }
         }
 
@@ -120,51 +102,51 @@ class DiscordService:
 
     def prefer_remix(self, params):
         request_body = {
-            "Type": 2,
-            "GuildID": params["guildId"],
-            "ChannelID": params["channelId"],
-            "ApplicationId": APPLICATION_ID,
-            "SessionId": params["sessionId"],
-            "Nonce": params["nonce"],
-            "Data": {
-                "Version": "1121575372539039776",
-                "Id": "984273800587776053",
-                "Name": "prefer",
-                "Type": 1,
-                "Options": [{"Type": 1, "Name": "remix", "Options": []}],
-                "ApplicationCommand": {
-                    "Id": "938956540159881230",
-                    "ApplicationId": APPLICATION_ID,
-                    "Version": "1118961510123847772",
-                    "Contexts": [1, 2, 3],
-                    "DefaultPermission": True,
-                    "DefaultMemberPermissions": None,
-                    "Type": 1,
-                    "Nsfw": False,
-                    "Name": "prefer",
-                    "Description": "...",
-                    "DmPermission": True,
-                    "Options": [
-                        {"Type": 2, "Name": "option", "Description": "...", "Options": [
-                            {"Type": 1, "Name": "set", "Description": "Set a custom option.", "Options": [
-                                {"Type": 3, "Name": "option", "Description": "..."},
-                                {"Type": 3, "Name": "value", "Description": "..."}
+            "type": 2,
+            "guild_id": params["guildId"],
+            "channel_id": params["channelId"],
+            "application_id": APPLICATION_ID,
+            "session_id": params["sessionId"],
+            "nonce": params["nonce"],
+            "data": {
+                "version": "1121575372539039776",
+                "id": "984273800587776053",
+                "name": "prefer",
+                "type": 1,
+                "options": [{"type": 1, "name": "remix", "options": []}],
+                "application_command": {
+                    "id": "938956540159881230",
+                    "application_id": APPLICATION_ID,
+                    "version": "1118961510123847772",
+                    "contexts": [1, 2, 3],
+                    "default_permission": True,
+                    "default_member_permissions": None,
+                    "type": 1,
+                    "nsfw": False,
+                    "name": "prefer",
+                    "description": "...",
+                    "dm_permission": True,
+                    "options": [
+                        {"type": 2, "name": "option", "description": "...", "options": [
+                            {"type": 1, "name": "set", "description": "Set a custom option.", "options": [
+                                {"type": 3, "name": "option", "description": "..."},
+                                {"type": 3, "name": "value", "description": "..."}
                             ]},
-                            {"Type": 1, "Name": "list", "Description": "View your current custom options.",
-                             "Options": []}
+                            {"type": 1, "name": "list", "description": "View your current custom options.",
+                             "options": []}
                         ]},
-                        {"Type": 1, "Name": "auto_dm",
-                         "Description": "Whether or not to automatically send job results to your DMs."},
-                        {"Type": 1, "Name": "suffix",
-                         "Description": "Suffix to automatically add to the end of every prompt. Leave empty to remove.",
-                         "Options": [
-                             {"Type": 3, "Name": "new_value", "Description": "..."}
+                        {"type": 1, "name": "auto_dm",
+                         "description": "Whether or not to automatically send job results to your DMs."},
+                        {"type": 1, "name": "suffix",
+                         "description": "Suffix to automatically add to the end of every prompt. Leave empty to remove.",
+                         "options": [
+                             {"type": 3, "name": "new_value", "description": "..."}
                          ]},
-                        {"Type": 1, "Name": "remix", "Description": "Toggle remix mode."},
-                        {"Type": 1, "Name": "variability", "Description": "Toggle variability mode."}
+                        {"type": 1, "name": "remix", "description": "Toggle remix mode."},
+                        {"type": 1, "name": "variability", "description": "Toggle variability mode."}
                     ],
                 },
-                "Attachments": []
+                "attachments": []
             }
         }
 
@@ -173,33 +155,34 @@ class DiscordService:
 
     def ask_question(self, params):
         request_body = {
-            "Type": 2,
-            "GuildID": params["guildId"],
-            "ChannelID": params["channelId"],
-            "ApplicationId": APPLICATION_ID,
-            "SessionId": params["sessionId"],
-            "Nonce": params["nonce"],
-            "Data": {
-                "Version": "1118961510123847771",
-                "Id": "994261739745050684",
-                "Name": "ask",
-                "Type": 1,
-                "Options": [{"Type": 3, "Name": "question", "Value": params["prompt"]}],
-                "ApplicationCommand": {
-                    "Id": "994261739745050684",
-                    "ApplicationId": APPLICATION_ID,
-                    "Version": "1118961510123847771",
-                    "Contexts": [0, 1, 2],
-                    "DefaultMemberPermissions": None,
-                    "Type": 1,
-                    "Nsfw": False,
-                    "Name": "ask",
-                    "Description": "Get an answer to a question.",
-                    "DmPermission": True,
-                    "Options": [
-                        {"Type": 3, "Name": "question", "Description": "What is the question?", "Required": True}],
+            "type": 2,
+            "guild_id": params["guildId"],
+            "channel_id": params["channelId"],
+            "application_id": APPLICATION_ID,
+            "session_id": params["sessionId"],
+            "nonce": params["nonce"],
+            "data": {
+                "version": "1118961510123847771",
+                "id": "994261739745050684",
+                "name": "ask",
+                "type": 1,
+                "options": [{"type": 3, "name": "question", "value": params["prompt"]}],
+                "application_command": {
+                    "id": "994261739745050684",
+                    "application_id": APPLICATION_ID,
+                    "version": "1118961510123847771",
+                    "contexts": [0, 1, 2],
+                    "default_member_permissions": None,
+                    "type": 1,
+                    "nsfw": False,
+                    "name": "ask",
+                    "description": "Get an answer to a question.",
+                    "dm_permission": True,
+                    "options": [
+                        {"type": 3, "name": "question", "description": "What is the question?", "required": True}
+                    ]
                 },
-                "Attachments": []
+                "attachments": []
             }
         }
 
@@ -208,31 +191,31 @@ class DiscordService:
 
     def view_information(self, params):
         request_body = {
-            "Type": 2,
-            "GuildID": params["guildId"],
-            "ChannelID": params["channelId"],
-            "ApplicationId": APPLICATION_ID,
-            "SessionId": params["sessionId"],
-            "Nonce": params["nonce"],
-            "Data": {
-                "Version": "1118961510123847776",
-                "Id": "972289487818334209",
-                "Name": "info",
-                "Type": 1,
-                "Options": [],
-                "ApplicationCommand": {
-                    "Id": "972289487818334209",
-                    "ApplicationId": APPLICATION_ID,
-                    "Version": "1118961510123847776",
-                    "Contexts": None,
-                    "DefaultMemberPermissions": None,
-                    "Type": 1,
-                    "Nsfw": False,
-                    "Name": "info",
-                    "Description": "View information about your profile.",
-                    "DmPermission": True,
+            "type": 2,
+            "guild_id": params["guildId"],
+            "channel_id": params["channelId"],
+            "application_id": APPLICATION_ID,
+            "session_id": params["sessionId"],
+            "nonce": params["nonce"],
+            "data": {
+                "version": "1118961510123847776",
+                "id": "972289487818334209",
+                "name": "info",
+                "type": 1,
+                "options": [],
+                "application_command": {
+                    "id": "972289487818334209",
+                    "application_id": APPLICATION_ID,
+                    "version": "1118961510123847776",
+                    "contexts": None,
+                    "default_member_permissions": None,
+                    "type": 1,
+                    "nsfw": False,
+                    "name": "info",
+                    "description": "View information about your profile.",
+                    "dm_permission": True
                 },
-                "Attachments": []
+                "attachments": []
             }
         }
 
@@ -241,31 +224,31 @@ class DiscordService:
 
     def switch_to_fast_mode(self, params):
         request_body = {
-            "Type": 2,
-            "GuildID": params["guildId"],
-            "ChannelID": params["channelId"],
-            "ApplicationId": APPLICATION_ID,
-            "SessionId": params["sessionId"],
-            "Nonce": params["nonce"],
-            "Data": {
-                "Version": "987795926183731231",
-                "Id": "972289487818334212",
-                "Name": "fast",
-                "Type": 1,
-                "Options": [],
-                "ApplicationCommand": {
-                    "Id": "972289487818334209",
-                    "ApplicationId": APPLICATION_ID,
-                    "Version": "987795926183731231",
-                    "Contexts": None,
-                    "DefaultMemberPermissions": None,
-                    "Type": 1,
-                    "Nsfw": False,
-                    "Name": "fast",
-                    "Description": "Switch to fast mode",
-                    "DmPermission": True,
+            "type": 2,
+            "guild_id": params["guildId"],
+            "channel_id": params["channelId"],
+            "application_id": APPLICATION_ID,
+            "session_id": params["sessionId"],
+            "nonce": params["nonce"],
+            "data": {
+                "version": "987795926183731231",
+                "id": "972289487818334212",
+                "name": "fast",
+                "type": 1,
+                "options": [],
+                "application_command": {
+                    "id": "972289487818334209",
+                    "application_id": APPLICATION_ID,
+                    "version": "987795926183731231",
+                    "contexts": None,
+                    "default_member_permissions": None,
+                    "type": 1,
+                    "nsfw": False,
+                    "name": "fast",
+                    "description": "Switch to fast mode",
+                    "dm_permission": True
                 },
-                "Attachments": []
+                "attachments": []
             }
         }
 
@@ -274,31 +257,31 @@ class DiscordService:
 
     def switch_to_relax_mode(self, params):
         request_body = {
-            "Type": 2,
-            "GuildID": params["guildId"],
-            "ChannelID": params["channelId"],
-            "ApplicationId": APPLICATION_ID,
-            "SessionId": params["sessionId"],
-            "Nonce": params["nonce"],
-            "Data": {
-                "Version": "987795926183731232",
-                "Id": "972289487818334213",
-                "Name": "relax",
-                "Type": 1,
-                "Options": [],
-                "ApplicationCommand": {
-                    "Id": "972289487818334213",
-                    "ApplicationId": APPLICATION_ID,
-                    "Version": "987795926183731232",
-                    "Contexts": None,
-                    "DefaultMemberPermissions": None,
-                    "Type": 1,
-                    "Nsfw": False,
-                    "Name": "relax",
-                    "Description": "Switch to relax mode",
-                    "DmPermission": True
+            "type": 2,
+            "guild_id": params["guildId"],
+            "channel_id": params["channelId"],
+            "application_id": APPLICATION_ID,
+            "session_id": params["sessionId"],
+            "nonce": params["nonce"],
+            "data": {
+                "version": "987795926183731232",
+                "id": "972289487818334213",
+                "name": "relax",
+                "type": 1,
+                "options": [],
+                "application_command": {
+                    "id": "972289487818334213",
+                    "application_id": APPLICATION_ID,
+                    "version": "987795926183731232",
+                    "contexts": None,
+                    "default_member_permissions": None,
+                    "type": 1,
+                    "nsfw": False,
+                    "name": "relax",
+                    "description": "Switch to relax mode",
+                    "dm_permission": True
                 },
-                "Attachments": []
+                "attachments": []
             }
         }
 
@@ -307,17 +290,17 @@ class DiscordService:
 
     def image_variation(self, params):
         request_body = {
-            "Type": 3,
-            "GuildId": params["guildId"],
-            "ChannelId": params["channelId"],
-            "MessageFlags": params["msgFlags"],
-            "MessageId": params["discordMsgId"],
-            "ApplicationId": APPLICATION_ID,
-            "SessionId": params["sessionId"],
-            "Nonce": params["nonce"],
-            "Data": {
-                "ComponentType": 2,
-                "CustomId": params["customId"],
+            "type": 3,
+            "guild_id": params["guildId"],
+            "channel_id": params["channelId"],
+            "message_flags": params["msgFlags"],
+            "message_id": params["discordMsgId"],
+            "application_id": APPLICATION_ID,
+            "session_id": params["sessionId"],
+            "nonce": params["nonce"],
+            "data": {
+                "component_type": 2,
+                "custom_id": params["customId"]
             }
         }
 
@@ -329,36 +312,37 @@ class DiscordService:
         upload_filename = params["prompt"]
 
         request_body = {
-            "Type": 2,
-            "GuildID": params["guildId"],
-            "ChannelID": params["channelId"],
-            "ApplicationId": APPLICATION_ID,
-            "SessionId": params["sessionId"],
-            "Nonce": params["nonce"],
-            "Data": {
-                "Version": "1118961510123847774",
-                "Id": "1092492867185950852",
-                "Name": "describe",
-                "Type": 1,
-                "Options": [{"Type": 11, "Name": "image", "Value": 0}],
-                "ApplicationCommand": {
-                    "Id": "1092492867185950852",
-                    "ApplicationId": APPLICATION_ID,
-                    "Version": "1118961510123847774",
-                    "DefaultPermission": True,
-                    "DefaultMemberPermissions": None,
-                    "Type": 1,
-                    "Nsfw": False,
-                    "Name": "describe",
-                    "Description": "Writes a prompt based on your image.",
-                    "DmPermission": True,
-                    "Options": [
-                        {"Type": 11, "Name": "image", "Description": "The image to describe", "Required": True}],
+            "type": 2,
+            "guild_id": params["guildId"],
+            "channel_id": params["channelId"],
+            "application_id": APPLICATION_ID,
+            "session_id": params["sessionId"],
+            "nonce": params["nonce"],
+            "data": {
+                "version": "1118961510123847774",
+                "id": "1092492867185950852",
+                "name": "describe",
+                "type": 1,
+                "options": [{"type": 11, "name": "image", "value": 0}],
+                "application_command": {
+                    "id": "1092492867185950852",
+                    "application_id": APPLICATION_ID,
+                    "version": "1118961510123847774",
+                    "default_permission": True,
+                    "default_member_permissions": None,
+                    "type": 1,
+                    "nsfw": False,
+                    "name": "describe",
+                    "description": "Writes a prompt based on your image.",
+                    "dm_permission": True,
+                    "options": [
+                        {"type": 11, "name": "image", "description": "The image to describe", "required": True}
+                    ]
                 },
-                "Attachments": [{
-                    "Id": "0",
-                    "Filename": filename,
-                    "UploadFilename": upload_filename,
+                "attachments": [{
+                    "id": "0",
+                    "filename": filename,
+                    "uploadFilename": upload_filename
                 }]
             }
         }
@@ -370,82 +354,82 @@ class DiscordService:
         options = []
         for i, upload_name in enumerate(params["uploadNames"]):
             options.append({
-                "Type": 11,
-                "Name": f"image{i + 1}",
-                "Value": i + 1,
+                "type": 11,
+                "name": f"image{i + 1}",
+                "value": i + 1,
             })
 
         choices = [
-            {"Name": "Portrait", "Value": "--ar 2:3"},
-            {"Name": "Square", "Value": "--ar 1:1"},
-            {"Name": "Landscape", "Value": "--ar 3:2"},
+            {"name": "Portrait", "Value": "--ar 2:3"},
+            {"name": "Square", "Value": "--ar 1:1"},
+            {"name": "Landscape", "Value": "--ar 3:2"},
         ]
         order_map = ["First", "Second", "Third", "Fourth", "Fifth"]
         command_options = []
         for i in range(len(params["uploadNames"])):
             command_options.append({
-                "Description": f"{order_map[i]} image to add to the blend",
-                "Name": f"image{i + 1}",
-                "Required": True,
-                "Type": 11,
+                "description": f"{order_map[i]} image to add to the blend",
+                "name": f"image{i + 1}",
+                "required": True,
+                "type": 11,
             })
         if params["prompt"]:
             options.append({
-                "Type": 3,
-                "Name": "dimensions",
-                "Value": params["prompt"],
+                "type": 3,
+                "name": "dimensions",
+                "value": params["prompt"],
             })
         command_options.append({
-            "Choices": choices,
-            "Description": "The dimensions of the image. If not specified, the image will be square.",
-            "Name": "dimensions",
-            "Type": 3,
+            "choices": choices,
+            "description": "The dimensions of the image. If not specified, the image will be square.",
+            "name": "dimensions",
+            "type": 3,
         })
         for i in range(len(command_options), 5):
             command_options.append({
-                "Description": f"{order_map[i]} image to add to the blend (optional)",
-                "Name": f"image{i + 1}",
-                "Type": 11,
+                "description": f"{order_map[i]} image to add to the blend (optional)",
+                "name": f"image{i + 1}",
+                "type": 11,
             })
 
         attachments = []
         for i, upload_name in enumerate(params["uploadNames"]):
             filename = os.path.basename(upload_name)
             attachments.append({
-                "Id": str(i + 1),
-                "Filename": filename,
-                "UploadFilename": upload_name,
+                "id": str(i + 1),
+                "filename": filename,
+                "uploadFilename": upload_name,
             })
 
         request_body = {
-            "Type": 2,
-            "GuildID": params["guildId"],
-            "ChannelID": params["channelId"],
-            "ApplicationId": APPLICATION_ID,
-            "SessionId": params["sessionId"],
-            "Nonce": params["nonce"],
-            "Data": {
-                "Version": "1118961510123847773",
-                "Id": "1062880104792997970",
-                "Name": "blend",
-                "Type": 1,
-                "Options": options,
-                "ApplicationCommand": {
-                    "Id": "1062880104792997970",
-                    "ApplicationId": APPLICATION_ID,
-                    "Version": "1118961510123847773",
-                    "Contexts": [1, 2, 3],
-                    "DefaultPermission": True,
-                    "DefaultMemberPermissions": None,
-                    "Type": 1,
-                    "Nsfw": False,
-                    "Name": "blend",
-                    "Description": "Blend images together seamlessly!",
-                    "DmPermission": True,
-                    "Options": command_options,
+            "type": 2,
+            "guild_id": params["guildId"],
+            "channel_id": params["channelId"],
+            "application_id": APPLICATION_ID,
+            "session_id": params["sessionId"],
+            "nonce": params["nonce"],
+            "data": {
+                "version": "1118961510123847773",
+                "id": "1062880104792997970",
+                "name": "blend",
+                "type": 1,
+                "options": options,
+                "application_command": {
+                    "id": "1062880104792997970",
+                    "application_id": APPLICATION_ID,
+                    "version": "1118961510123847773",
+                    "contexts": [1, 2, 3],
+                    "default_permission": True,
+                    "default_member_permissions": None,
+                    "type": 1,
+                    "nsfw": False,
+                    "name": "blend",
+                    "description": "Blend images together seamlessly!",
+                    "dm_permission": True,
+                    "options": command_options
                 },
-                "Attachments": attachments,
-            },
+                "attachments": attachments
+            }
         }
 
         _, err = req_midjourney(request_body, params["userToken"])
@@ -494,24 +478,24 @@ class DiscordService:
         print("com_custom_id: " + com_custom_id)
 
         request_body = {
-            "Type": 5,
-            "GuildID": params["guildId"],
-            "ChannelID": params["channelId"],
-            "ApplicationId": APPLICATION_ID,
-            "SessionId": params["sessionId"],
-            "Nonce": params["nonce"],
-            "Data": {
-                "Id": params["dataId"],
-                "CustomId": data_custom_id,
-                "Components": [{
-                    "Type": 1,
-                    "Components": [{
-                        "CustomId": com_custom_id,
-                        "Type": 4,
-                        "Value": params["prompt"],
-                    }],
-                }],
-            },
+            "type": 5,
+            "guild_id": params["guildId"],
+            "channel_id": params["channelId"],
+            "application_id": APPLICATION_ID,
+            "session_id": params["sessionId"],
+            "nonce": params["nonce"],
+            "data": {
+                "id": params["dataId"],
+                "custom_id": data_custom_id,
+                "components": [{
+                    "type": 1,
+                    "components": [{
+                        "custom_id": com_custom_id,
+                        "type": 4,
+                        "value": params["prompt"]
+                    }]
+                }]
+            }
         }
 
         _, err = req_midjourney(request_body, params["userToken"])
@@ -519,35 +503,36 @@ class DiscordService:
 
     def shorten_prompt(self, params):
         request_body = {
-            "Type": 2,
-            "GuildID": params["guildId"],
-            "ChannelID": params["channelId"],
-            "ApplicationId": APPLICATION_ID,
-            "SessionId": params["sessionId"],
-            "Nonce": params["nonce"],
-            "Data": {
-                "Version": "1121575372539039775",
-                "Id": "1121575372539039774",
-                "Name": "shorten",
-                "Type": 1,
-                "Options": [{"Name": "prompt", "Type": 3, "Value": params["prompt"]}],
-                "ApplicationCommand": {
-                    "Id": "1121575372539039774",
-                    "ApplicationId": APPLICATION_ID,
-                    "Version": "1121575372539039775",
-                    "Contexts": None,
-                    "DefaultPermission": True,
-                    "DefaultMemberPermissions": None,
-                    "Type": 1,
-                    "Nsfw": False,
-                    "Name": "shorten",
-                    "Description": "Analyzes and shortens a prompt.",
-                    "DmPermission": True,
-                    "Options": [
-                        {"Name": "prompt", "Description": "The prompt to shorten.", "Type": 3, "Required": True}],
+            "type": 2,
+            "guild_id": params["guildId"],
+            "channel_id": params["channelId"],
+            "application_id": APPLICATION_ID,
+            "session_id": params["sessionId"],
+            "nonce": params["nonce"],
+            "data": {
+                "version": "1121575372539039775",
+                "id": "1121575372539039774",
+                "name": "shorten",
+                "type": 1,
+                "options": [{"name": "prompt", "type": 3, "value": params["prompt"]}],
+                "application_command": {
+                    "id": "1121575372539039774",
+                    "application_id": APPLICATION_ID,
+                    "version": "1121575372539039775",
+                    "contexts": None,
+                    "default_permission": True,
+                    "default_member_permissions": None,
+                    "type": 1,
+                    "nsfw": False,
+                    "name": "shorten",
+                    "description": "Analyzes and shortens a prompt.",
+                    "dm_permission": True,
+                    "options": [
+                        {"name": "prompt", "description": "The prompt to shorten.", "type": 3, "required": True}
+                    ]
                 },
-                "Attachments": [],
-            },
+                "attachments": []
+            }
         }
 
         _, err = req_midjourney(request_body, params["userToken"])
@@ -555,35 +540,36 @@ class DiscordService:
 
     def show_image(self, params):
         request_body = {
-            "Type": 2,
-            "GuildID": params["guildId"],
-            "ChannelID": params["channelId"],
-            "ApplicationId": APPLICATION_ID,
-            "SessionId": params["sessionId"],
-            "Nonce": params["nonce"],
-            "Data": {
-                "Version": "990020489659449405",
-                "Id": "990020489659449404",
-                "Name": "show",
-                "Type": 1,
-                "Options": [{"Name": "job_id", "Type": 3, "Value": params["prompt"]}],
-                "ApplicationCommand": {
-                    "Id": "990020489659449404",
-                    "ApplicationId": APPLICATION_ID,
-                    "Version": "990020489659449405",
-                    "Contexts": None,
-                    "DefaultPermission": True,
-                    "DefaultMemberPermissions": None,
-                    "Type": 1,
-                    "Nsfw": False,
-                    "Name": "show",
-                    "Description": "Shows the job view based on job id.",
-                    "DmPermission": True,
-                    "Options": [
-                        {"Name": "prompt", "Description": "The prompt to shorten.", "Type": 3, "Required": True}],
+            "type": 2,
+            "guild_id": params["guildId"],
+            "channel_id": params["channelId"],
+            "application_id": APPLICATION_ID,
+            "session_id": params["sessionId"],
+            "nonce": params["nonce"],
+            "data": {
+                "version": "990020489659449405",
+                "id": "990020489659449404",
+                "name": "show",
+                "type": 1,
+                "options": [{"name": "job_id", "type": 3, "value": params["prompt"]}],
+                "application_command": {
+                    "id": "990020489659449404",
+                    "application_id": APPLICATION_ID,
+                    "version": "990020489659449405",
+                    "contexts": None,
+                    "default_permission": True,
+                    "default_member_permissions": None,
+                    "type": 1,
+                    "nsfw": False,
+                    "name": "show",
+                    "description": "Shows the job view based on job id.",
+                    "dm_permission": True,
+                    "options": [
+                        {"name": "prompt", "description": "The prompt to shorten.", "type": 3, "required": True}
+                    ]
                 },
-                "Attachments": [],
-            },
+                "attachments": []
+            }
         }
 
         _, err = req_midjourney(request_body, params["userToken"])
