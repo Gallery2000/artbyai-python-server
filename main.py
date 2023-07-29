@@ -3,7 +3,9 @@ import threading
 
 from loguru import logger
 
-from api import DiscordApi
+import glovar
+import models
+from api import LarkApi
 from config import get_config
 from discord_client import MyClient
 from handlers import app
@@ -11,15 +13,19 @@ from handlers import app
 config = get_config()
 
 if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
-    discord_api = DiscordApi(config["base_url"])
-    discord_data = discord_api.get_discord(config["discord_id"])
-    if not discord_data:
+    glovar.discord_id = config["discord_id"]
+    glovar.lark_api = LarkApi(config["base_url"])
+    data = glovar.lark_api.get_discord()
+    if data is None:
         logger.error("Discord " + str(config["discord_id"]) + " not found")
         exit(1)
+    else:
+        glovar.discord = models.Discord(data["userToken"], data["sessionId"], data["channelId"], data["guildId"],
+                                        data["dmChannelId"])
 
-    client = MyClient(discord_data["id"], discord_data["channelId"], discord_data["dmChannelId"], discord_api)
+    client = MyClient()
 
-    bot_thread = threading.Thread(target=client.run, args=(discord_data["userToken"],))
+    bot_thread = threading.Thread(target=client.run, args=(glovar.discord.user_token,))
     bot_thread.daemon = True
     bot_thread.start()
 

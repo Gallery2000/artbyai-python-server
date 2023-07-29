@@ -4,6 +4,9 @@ import re
 
 import requests
 
+import glovar
+import utils
+
 INTERACTIONS_URL = "https://discord.com/api/v9/interactions"
 APPLICATION_ID = "936929561302675456"
 
@@ -41,35 +44,116 @@ def get_data_custom(params):
     return data_custom_id, com_custom_id
 
 
-def req_midjourney(data, token):
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": token,
-    }
-    print(json.dumps(data))
-    try:
-        response = requests.post(INTERACTIONS_URL, json=data, headers=headers)
-        response.raise_for_status()
-        if response.text:
-            data = response.json()  # 解析JSON数据
-        else:
-            data = {}  # 响应为空，使用空字典表示空数据
-        print(data)
-        return response.content, None
-    except requests.exceptions.RequestException as e:
-        return None, e
-    except json.JSONDecodeError as e:
-        return None, e
+class DiscordApi:
+    def req_midjourney(self, data):
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": glovar.discord.user_token,
+        }
+        print(json.dumps(data))
+        try:
+            response = requests.post(INTERACTIONS_URL, json=data, headers=headers)
+            response.raise_for_status()
+            if response.text:
+                data = response.json()  # 解析JSON数据
+            else:
+                data = {}  # 响应为空，使用空字典表示空数据
+            print(data)
+            return response.content, None
+        except requests.exceptions.RequestException as e:
+            return None, e
+        except json.JSONDecodeError as e:
+            return None, e
 
+    def upload_file(self, name, size, img_data):
+        try:
+            attachments_data, err = self.get_filename(name, size)
+            if err is not None:
+                return None, err
 
-class DiscordService:
+            if len(attachments_data.get("attachments", [])) == 0:
+                return None, ValueError("No attachments found")
+            upload_url = attachments_data["attachments"][0]["upload_url"]
+
+            headers = {
+                "Content-Type": "image/png"
+            }
+
+            response = requests.put(upload_url, data=img_data, headers=headers)
+            response.raise_for_status()
+            return attachments_data["attachments"][0]["upload_filename"], None
+        except Exception as e:
+            return e
+
+    def get_filename(self, name, size):
+        attachments_url = f"https://discord.com/api/v9/channels/{glovar.discord.channel_id}/attachments"
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": glovar.discord.user_token,
+        }
+        payload = {
+            "Files": [
+                {
+                    "Filename": name,
+                    "FileSize": size,
+                    "Id": "1",
+                }
+            ]
+        }
+
+        try:
+            response = requests.post(attachments_url, headers=headers, json=payload)
+            response.raise_for_status()
+
+            data = response.json()
+            return data
+        except requests.exceptions.RequestException as e:
+            return e
+
+    def get_img_url(self, name, size, img_data):
+        pathname, err = self.upload_file(name, size, img_data)
+        if err is not None:
+            return None, err
+        messages_url = f"https://discord.com/api/v9/channels/{glovar.discord.channel_id}/messages"  # 请替换为实际的消息发送URL
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": glovar.discord.user_token,
+        }
+
+        filename = os.path.basename(pathname)
+        request_body = {
+            "Content": "",
+            "Nonce": utils.generate_nonce(),
+            "ChannelID": glovar.discord.channel_id,
+            "Type": 0,
+            "StickerIDs": [],
+            "Attachments": [
+                {
+                    "ID": "0",
+                    "Filename": filename,
+                    "UploadedFilename": pathname,
+                }
+            ],
+        }
+
+        try:
+            response = requests.post(messages_url, headers=headers, json=request_body)
+            response.raise_for_status()
+
+            data = response.json()
+            if not data.get("attachments"):
+                return "", ValueError("No attachments found")
+            return data["attachments"][0]["url"], None
+        except requests.exceptions.RequestException as e:
+            return None, e
+
     def generate_image(self, params):
         request_body = {
             "type": 2,
-            "guild_id": params["guildId"],
-            "channel_id": params["channelId"],
+            "guild_id": glovar.discord.guild_id,
+            "channel_id": glovar.discord.channel_id,
             "application_id": APPLICATION_ID,
-            "session_id": params["sessionId"],
+            "session_id": glovar.discord.session_id,
             "nonce": params["nonce"],
             "data": {
                 "version": "1118961510123847772",
@@ -97,16 +181,16 @@ class DiscordService:
             }
         }
 
-        _, err = req_midjourney(request_body, params["userToken"])
+        _, err = self.req_midjourney(request_body)
         return err
 
     def prefer_remix(self, params):
         request_body = {
             "type": 2,
-            "guild_id": params["guildId"],
-            "channel_id": params["channelId"],
+            "guild_id": glovar.discord.guild_id,
+            "channel_id": glovar.discord.channel_id,
             "application_id": APPLICATION_ID,
-            "session_id": params["sessionId"],
+            "session_id": glovar.discord.session_id,
             "nonce": params["nonce"],
             "data": {
                 "version": "1121575372539039776",
@@ -150,16 +234,16 @@ class DiscordService:
             }
         }
 
-        _, err = req_midjourney(request_body, params["userToken"])
+        _, err = self.req_midjourney(request_body)
         return err
 
     def ask_question(self, params):
         request_body = {
             "type": 2,
-            "guild_id": params["guildId"],
-            "channel_id": params["channelId"],
+            "guild_id": glovar.discord.guild_id,
+            "channel_id": glovar.discord.channel_id,
             "application_id": APPLICATION_ID,
-            "session_id": params["sessionId"],
+            "session_id": glovar.discord.session_id,
             "nonce": params["nonce"],
             "data": {
                 "version": "1118961510123847771",
@@ -186,16 +270,16 @@ class DiscordService:
             }
         }
 
-        _, err = req_midjourney(request_body, params["userToken"])
+        _, err = self.req_midjourney(request_body)
         return err
 
     def view_information(self, params):
         request_body = {
             "type": 2,
-            "guild_id": params["guildId"],
-            "channel_id": params["channelId"],
+            "guild_id": glovar.discord.guild_id,
+            "channel_id": glovar.discord.channel_id,
             "application_id": APPLICATION_ID,
-            "session_id": params["sessionId"],
+            "session_id": glovar.discord.session_id,
             "nonce": params["nonce"],
             "data": {
                 "version": "1118961510123847776",
@@ -219,16 +303,16 @@ class DiscordService:
             }
         }
 
-        _, err = req_midjourney(request_body, params["userToken"])
+        _, err = self.req_midjourney(request_body)
         return err
 
     def switch_to_fast_mode(self, params):
         request_body = {
             "type": 2,
-            "guild_id": params["guildId"],
-            "channel_id": params["channelId"],
+            "guild_id": glovar.discord.guild_id,
+            "channel_id": glovar.discord.channel_id,
             "application_id": APPLICATION_ID,
-            "session_id": params["sessionId"],
+            "session_id": glovar.discord.session_id,
             "nonce": params["nonce"],
             "data": {
                 "version": "987795926183731231",
@@ -252,16 +336,16 @@ class DiscordService:
             }
         }
 
-        _, err = req_midjourney(request_body, params["userToken"])
+        _, err = self.req_midjourney(request_body)
         return err
 
     def switch_to_relax_mode(self, params):
         request_body = {
             "type": 2,
-            "guild_id": params["guildId"],
-            "channel_id": params["channelId"],
+            "guild_id": glovar.discord.guild_id,
+            "channel_id": glovar.discord.channel_id,
             "application_id": APPLICATION_ID,
-            "session_id": params["sessionId"],
+            "session_id": glovar.discord.session_id,
             "nonce": params["nonce"],
             "data": {
                 "version": "987795926183731232",
@@ -285,18 +369,18 @@ class DiscordService:
             }
         }
 
-        _, err = req_midjourney(request_body, params["userToken"])
+        _, err = self.req_midjourney(request_body)
         return err
 
     def image_variation(self, params):
         request_body = {
             "type": 3,
-            "guild_id": params["guildId"],
-            "channel_id": params["channelId"],
+            "guild_id": glovar.discord.guild_id,
+            "channel_id": glovar.discord.channel_id,
             "message_flags": params["msgFlags"],
             "message_id": params["discordMsgId"],
             "application_id": APPLICATION_ID,
-            "session_id": params["sessionId"],
+            "session_id": glovar.discord.session_id,
             "nonce": params["nonce"],
             "data": {
                 "component_type": 2,
@@ -304,19 +388,19 @@ class DiscordService:
             }
         }
 
-        _, err = req_midjourney(request_body, params["userToken"])
+        _, err = self.req_midjourney(request_body)
         return err
 
     def describe_image(self, params):
         filename = os.path.basename(params["prompt"])
-        upload_filename = params["prompt"]
+        uploaded_filename = params["prompt"]
 
         request_body = {
             "type": 2,
-            "guild_id": params["guildId"],
-            "channel_id": params["channelId"],
+            "guild_id": glovar.discord.guild_id,
+            "channel_id": glovar.discord.channel_id,
             "application_id": APPLICATION_ID,
-            "session_id": params["sessionId"],
+            "session_id": glovar.discord.session_id,
             "nonce": params["nonce"],
             "data": {
                 "version": "1118961510123847774",
@@ -328,7 +412,7 @@ class DiscordService:
                     "id": "1092492867185950852",
                     "application_id": APPLICATION_ID,
                     "version": "1118961510123847774",
-                    "default_permission": True,
+                    "contexts": [0, 1, 2],
                     "default_member_permissions": None,
                     "type": 1,
                     "nsfw": False,
@@ -342,12 +426,12 @@ class DiscordService:
                 "attachments": [{
                     "id": "0",
                     "filename": filename,
-                    "uploadFilename": upload_filename
+                    "uploaded_filename": uploaded_filename
                 }]
             }
         }
 
-        _, err = req_midjourney(request_body, params["userToken"])
+        _, err = self.req_midjourney(request_body)
         return err
 
     def blend_images(self, params):
@@ -373,7 +457,7 @@ class DiscordService:
                 "required": True,
                 "type": 11,
             })
-        if params["prompt"]:
+        if params["prompt"] is not None:
             options.append({
                 "type": 3,
                 "name": "dimensions",
@@ -393,20 +477,20 @@ class DiscordService:
             })
 
         attachments = []
-        for i, upload_name in enumerate(params["uploadNames"]):
-            filename = os.path.basename(upload_name)
+        for i, uploaded_filename in enumerate(params["uploadNames"]):
+            filename = os.path.basename(uploaded_filename)
             attachments.append({
                 "id": str(i + 1),
                 "filename": filename,
-                "uploadFilename": upload_name,
+                "uploaded_filename": uploaded_filename,
             })
 
         request_body = {
             "type": 2,
-            "guild_id": params["guildId"],
-            "channel_id": params["channelId"],
+            "guild_id": glovar.discord.guild_id,
+            "channel_id": glovar.discord.channel_id,
             "application_id": APPLICATION_ID,
-            "session_id": params["sessionId"],
+            "session_id": glovar.discord.session_id,
             "nonce": params["nonce"],
             "data": {
                 "version": "1118961510123847773",
@@ -432,7 +516,7 @@ class DiscordService:
             }
         }
 
-        _, err = req_midjourney(request_body, params["userToken"])
+        _, err = self.req_midjourney(request_body)
         return err
 
     def image_remix(self, params):
@@ -445,14 +529,14 @@ class DiscordService:
             com_custom_id = "MJ::OutpaintCustomZoomModal::prompt"
         elif "Variation" in params["customId"]:
             match = re.search(r"variation::(\d)", params["customId"])
-            if match:
+            if match is not None:
                 vary = match.group(1)
                 data_custom_id = f"MJ::RemixModal::{params['msgHash']}::{vary}::1"
             else:
                 data_custom_id, com_custom_id = get_data_custom(params)
         elif "Pan" in params["customId"]:
             re_match = re.search(r"pan_(\w+)", params["customId"])
-            if re_match:
+            if re_match is not None:
                 direction = re_match.group(1)
                 data_custom_id = f"MJ::PanModal::{direction}::{params['msgHash']}"
                 com_custom_id = "MJ::PanModal::prompt"
@@ -461,7 +545,7 @@ class DiscordService:
             com_custom_id = "MJ::ImagineModal::new_prompt"
         elif "PicReader" in params["customId"]:
             re_match = re.search(r"MJ::Job::PicReader::(\d)", params["customId"])
-            if re_match:
+            if re_match is not None:
                 pic_reader_id = re_match.group(1)
                 data_custom_id = f"MJ::Picreader::Modal::{pic_reader_id}"
                 com_custom_id = "MJ::Picreader::Modal::PromptField"
@@ -479,10 +563,10 @@ class DiscordService:
 
         request_body = {
             "type": 5,
-            "guild_id": params["guildId"],
-            "channel_id": params["channelId"],
+            "guild_id": glovar.discord.guild_id,
+            "channel_id": glovar.discord.channel_id,
             "application_id": APPLICATION_ID,
-            "session_id": params["sessionId"],
+            "session_id": glovar.discord.session_id,
             "nonce": params["nonce"],
             "data": {
                 "id": params["dataId"],
@@ -498,16 +582,16 @@ class DiscordService:
             }
         }
 
-        _, err = req_midjourney(request_body, params["userToken"])
+        _, err = self.req_midjourney(request_body)
         return err
 
     def shorten_prompt(self, params):
         request_body = {
             "type": 2,
-            "guild_id": params["guildId"],
-            "channel_id": params["channelId"],
+            "guild_id": glovar.discord.guild_id,
+            "channel_id": glovar.discord.channel_id,
             "application_id": APPLICATION_ID,
-            "session_id": params["sessionId"],
+            "session_id": glovar.discord.session_id,
             "nonce": params["nonce"],
             "data": {
                 "version": "1121575372539039775",
@@ -535,16 +619,16 @@ class DiscordService:
             }
         }
 
-        _, err = req_midjourney(request_body, params["userToken"])
+        _, err = self.req_midjourney(request_body)
         return err
 
     def show_image(self, params):
         request_body = {
             "type": 2,
-            "guild_id": params["guildId"],
-            "channel_id": params["channelId"],
+            "guild_id": glovar.discord.guild_id,
+            "channel_id": glovar.discord.channel_id,
             "application_id": APPLICATION_ID,
-            "session_id": params["sessionId"],
+            "session_id": glovar.discord.session_id,
             "nonce": params["nonce"],
             "data": {
                 "version": "990020489659449405",
@@ -572,5 +656,5 @@ class DiscordService:
             }
         }
 
-        _, err = req_midjourney(request_body, params["userToken"])
+        _, err = self.req_midjourney(request_body)
         return err

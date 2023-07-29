@@ -3,6 +3,8 @@ import threading
 import discord
 from loguru import logger
 
+import glovar
+
 PLAINTEXT = "PlainText"
 FIRST_TRIGGER = "FirstTrigger"
 GENERATE_END = "GenerateEnd"
@@ -14,23 +16,20 @@ INTERACTION_FINISH = "InteractionFinish"
 
 
 class MyClient(discord.Client):
-    def __init__(self, discord_id: int, channel_id: str, dm_channel_id: str, discord_api):
+    def __init__(self):
         super().__init__()
-        self.discord_id = discord_id
-        self.channel_id = channel_id
-        self.dm_channel_id = dm_channel_id
-        self.api = discord_api
 
     async def on_ready(self):
         for session in self.sessions:
-            self.api.update_discord_ssid(self.discord_id, session.session_id)
+            glovar.lark_api.update_discord_ssid(session.session_id)
             return
 
     def callback_message(self, message_type, extra):
         """Helper function to construct callback message and execute callback."""
-        self.api.callback_discord(self.discord_id, {
+        glovar.lark_api.callback_discord({
             **{
                 "type": message_type,
+                "discordId": glovar.discord["id"]
             }, **extra
         })
 
@@ -52,7 +51,6 @@ class MyClient(discord.Client):
             ],
             "components": [],
             "referMsgId": str(message.reference.message_id) if message.reference else "",
-            "discordId": self.discord_id,
             "flags": message.flags.value,
         }
 
@@ -68,9 +66,9 @@ class MyClient(discord.Client):
                     "custom_id": button.custom_id,
                 })
 
-        if str(message.channel.id) == self.dm_channel_id:
+        if str(message.channel.id) == glovar.discord.dm_channel_id:
             self.callback_message(DIRECT_MESSAGE, msg_data)
-        elif str(message.channel.id) == self.channel_id:
+        elif str(message.channel.id) == glovar.discord.channel_id:
             self.handle_channel_message(message, msg_data)
 
     def handle_channel_message(self, message, msg_data):
@@ -111,7 +109,6 @@ class MyClient(discord.Client):
                 "embeds": payload.data['embeds'],
                 "attachments": payload.data['attachments'],
                 "components": [],
-                "discordId": self.discord_id,
             }
 
             while len(msg_data["components"]) < len(payload.data["components"]):
@@ -126,7 +123,7 @@ class MyClient(discord.Client):
                         "custom_id": button["custom_id"] if "custom_id" in button else "",
                     })
 
-            if str(payload.channel_id) == self.channel_id:
+            if str(payload.channel_id) == glovar.discord.channel_id:
                 self.handle_edit_channel_message(payload, msg_data)
 
         except Exception as e:
@@ -153,6 +150,5 @@ class MyClient(discord.Client):
         my_thread = threading.Thread(target=self.callback_message, args=(INTERACTION_FINISH, {
             "dataId": str(interaction.id),
             "nonce": interaction.nonce,
-            "discordId": self.discord_id,
         }))
         my_thread.start()
