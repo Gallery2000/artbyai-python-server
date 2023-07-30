@@ -22,8 +22,12 @@ discord_api = DiscordApi()
 
 @app.route('/trigger/upload_file', methods=['POST'])
 def upload_file():
-    data = request.get_json()
-    pathname, err = discord_api.upload_file(data.get('name'), data.get('size'), data.get('imgData'))
+    if 'image' not in request.files:
+        return jsonify({"code": 1, "msg": "No image file provided."})
+    image_file = request.files['image']
+    if image_file.mimetype not in ['image/jpeg', 'image/png']:
+        return jsonify({"code": 1, "msg": "Invalid image format. Only JPEG and PNG images are supported."})
+    pathname, err = discord_api.upload_file(image_file)
     if err is not None:
         return jsonify({"code": 1, "msg": str(err)})
     return jsonify({"code": 0, "msg": "success", "data": pathname})
@@ -31,8 +35,12 @@ def upload_file():
 
 @app.route('/trigger/get_img_url', methods=['POST'])
 def get_img_url():
-    data = request.get_json()
-    img_url, err = discord_api.get_img_url(data.get('name'), data.get('size'), data.get('imgData'))
+    if 'image' not in request.files:
+        return jsonify({"code": 1, "msg": "No image file provided."})
+    image_file = request.files['image']
+    if image_file.mimetype not in ['image/jpeg', 'image/png']:
+        return jsonify({"code": 1, "msg": "Invalid image format. Only JPEG and PNG images are supported."})
+    img_url, err = discord_api.get_img_url(image_file)
     if err is not None:
         return jsonify({"code": 1, "msg": str(err)})
     return jsonify({"code": 0, "msg": "success", "data": img_url})

@@ -29,7 +29,7 @@ class MyClient(discord.Client):
         glovar.lark_api.callback_discord({
             **{
                 "type": message_type,
-                "discordId": glovar.discord["id"]
+                "discordId": glovar.discord_id
             }, **extra
         })
 
@@ -92,7 +92,7 @@ class MyClient(discord.Client):
         try:
             if payload.data is None:
                 return
-            if payload.data['author'] is None:
+            if payload.data.get('author') is None:
                 return
             if payload.data['author']['id'] == self.user.id:
                 return

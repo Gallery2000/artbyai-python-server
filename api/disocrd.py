@@ -65,9 +65,11 @@ class DiscordApi:
         except json.JSONDecodeError as e:
             return None, e
 
-    def upload_file(self, name, size, img_data):
+    def upload_file(self, image_file):
         try:
-            attachments_data, err = self.get_filename(name, size)
+            file_size = len(image_file.read())
+            image_file.seek(0)
+            attachments_data, err = self.get_filename(image_file.filename, file_size)
             if err is not None:
                 return None, err
 
@@ -79,11 +81,11 @@ class DiscordApi:
                 "Content-Type": "image/png"
             }
 
-            response = requests.put(upload_url, data=img_data, headers=headers)
+            response = requests.put(upload_url, data=image_file, headers=headers)
             response.raise_for_status()
-            return attachments_data["attachments"][0]["upload_filename"], None
+            return attachments_data['attachments'][0]['upload_filename'], None
         except Exception as e:
-            return e
+            return None, e
 
     def get_filename(self, name, size):
         attachments_url = f"https://discord.com/api/v9/channels/{glovar.discord.channel_id}/attachments"
@@ -92,11 +94,11 @@ class DiscordApi:
             "Authorization": glovar.discord.user_token,
         }
         payload = {
-            "Files": [
+            "files": [
                 {
-                    "Filename": name,
-                    "FileSize": size,
-                    "Id": "1",
+                    "filename": name,
+                    "file_size": size,
+                    "id": "1",
                 }
             ]
         }
@@ -106,12 +108,12 @@ class DiscordApi:
             response.raise_for_status()
 
             data = response.json()
-            return data
+            return data, None
         except requests.exceptions.RequestException as e:
-            return e
+            return None, e
 
-    def get_img_url(self, name, size, img_data):
-        pathname, err = self.upload_file(name, size, img_data)
+    def get_img_url(self, image_file):
+        pathname, err = self.upload_file(image_file)
         if err is not None:
             return None, err
         messages_url = f"https://discord.com/api/v9/channels/{glovar.discord.channel_id}/messages"  # 请替换为实际的消息发送URL
@@ -122,16 +124,16 @@ class DiscordApi:
 
         filename = os.path.basename(pathname)
         request_body = {
-            "Content": "",
-            "Nonce": utils.generate_nonce(),
-            "ChannelID": glovar.discord.channel_id,
-            "Type": 0,
-            "StickerIDs": [],
-            "Attachments": [
+            "content": "",
+            "nonce": utils.generate_nonce(),
+            "channel_id": glovar.discord.channel_id,
+            "type": 0,
+            "sticker_ids": [],
+            "attachments": [
                 {
-                    "ID": "0",
-                    "Filename": filename,
-                    "UploadedFilename": pathname,
+                    "id": "0",
+                    "filename": filename,
+                    "uploaded_filename": pathname,
                 }
             ],
         }
