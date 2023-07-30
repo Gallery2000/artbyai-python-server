@@ -459,7 +459,7 @@ class DiscordApi:
                 "required": True,
                 "type": 11,
             })
-        if params["prompt"] is not None:
+        if params.get("prompt") is not None:
             options.append({
                 "type": 3,
                 "name": "dimensions",
