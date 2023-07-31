@@ -6,6 +6,7 @@ import requests
 
 import glovar
 import utils
+from constant import custom
 
 INTERACTIONS_URL = "https://discord.com/api/v9/interactions"
 APPLICATION_ID = "936929561302675456"
@@ -54,11 +55,6 @@ class DiscordApi:
         try:
             response = requests.post(INTERACTIONS_URL, json=data, headers=headers)
             response.raise_for_status()
-            if response.text:
-                data = response.json()  # 解析JSON数据
-            else:
-                data = {}  # 响应为空，使用空字典表示空数据
-            print(data)
             return response.content, None
         except requests.exceptions.RequestException as e:
             return None, e
@@ -526,36 +522,35 @@ class DiscordApi:
         data_custom_id = ""
         com_custom_id = ""
 
-        if "CustomZoom" in params["customId"]:
+        if custom.CUSTOM_ZOOM in params["customId"]:
             data_custom_id = f"MJ::OutpaintCustomZoomModal::{params['msgHash']}"
             com_custom_id = "MJ::OutpaintCustomZoomModal::prompt"
-        elif "Variation" in params["customId"]:
+        elif custom.VARIATION in params["customId"]:
             match = re.search(r"variation::(\d)", params["customId"])
             if match is not None:
                 vary = match.group(1)
                 data_custom_id = f"MJ::RemixModal::{params['msgHash']}::{vary}::1"
-            else:
-                data_custom_id, com_custom_id = get_data_custom(params)
-        elif "Pan" in params["customId"]:
+                com_custom_id = "MJ::RemixModal::new_prompt"
+        elif custom.PAN in params["customId"]:
             re_match = re.search(r"pan_(\w+)", params["customId"])
             if re_match is not None:
                 direction = re_match.group(1)
                 data_custom_id = f"MJ::PanModal::{direction}::{params['msgHash']}"
                 com_custom_id = "MJ::PanModal::prompt"
-        elif "PromptAnalyzer" in params["customId"]:
+        elif custom.PROMPT_ANALYZER in params["customId"]:
             data_custom_id = f"MJ::ImagineModal::{params['discordMsgId']}"
             com_custom_id = "MJ::ImagineModal::new_prompt"
-        elif "PicReader" in params["customId"]:
+        elif custom.PIC_READER in params["customId"]:
             re_match = re.search(r"MJ::Job::PicReader::(\d)", params["customId"])
             if re_match is not None:
                 pic_reader_id = re_match.group(1)
                 data_custom_id = f"MJ::Picreader::Modal::{pic_reader_id}"
                 com_custom_id = "MJ::Picreader::Modal::PromptField"
-        elif "ReRoll" in params["customId"]:
+        elif custom.RE_ROLL in params["customId"]:
             data_custom_id, com_custom_id = get_data_custom(params)
         else:
             vary = 1
-            if "LowVariation" in params["customId"]:
+            if custom.LOW_VARIATION in params["customId"]:
                 vary = 0
             data_custom_id = f"MJ::RemixModal::{params['msgHash']}::1::{vary}"
             com_custom_id = "MJ::RemixModal::new_prompt"
