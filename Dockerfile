@@ -1,32 +1,17 @@
-# 构建阶段
-# 设置基础镜像
-FROM python:3.9 AS builder
+FROM python:3.9 as build-python
 
-# 设置工作目录
+COPY requirements.txt /app/
 WORKDIR /app
+RUN pip install -r requirements.txt
 
-# 复制项目文件到工作目录
+FROM python:3.9-slim
+
+COPY --from=build-python /usr/local/lib/python3.9/site-packages/ /usr/local/lib/python3.9/site-packages/
+COPY --from=build-python /usr/local/bin/ /usr/local/bin/
 COPY . /app
-
-# 安装项目依赖
-RUN pip install --no-cache-dir -r requirements.txt
-
-# 运行阶段
-# 设置基础镜像
-FROM python:3.9
-
-# 设置工作目录
 WORKDIR /app
-
-# 从构建阶段复制已安装的项目依赖
-COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
-
-# 复制项目文件到工作目录
-COPY . /app
-
-RUN pip install gunicorn
 
 EXPOSE 5000
+ENV PYTHONUNBUFFERED 1
 
-# 启动应用程序
-CMD ["gunicorn", "handlers:app", "-b", "0.0.0.0:5000"]
+CMD ["gunicorn", "--bind", ":5000", "--workers", "1", "main:app"]
