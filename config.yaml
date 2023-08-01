@@ -1,3 +1,4 @@
 base_url: http://lark.cpolar.top
 discord_id: 5
 port: 5000
+secret_key: "JHgaOI21wfpHmTeVoGT3no3im3jc2uRV"

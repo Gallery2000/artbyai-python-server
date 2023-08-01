@@ -1,6 +1,8 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, abort
 
+import glovar
 from api import DiscordApi
+from utils import verify_hmac_signature
 
 ImageShowType = "show"
 ImageShortenType = "shorten"
@@ -48,35 +50,44 @@ def get_img_url():
 
 @app.route('/trigger/midjourney', methods=['POST'])
 def midjourney():
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("HMAC-SHA256 "):
+        abort(401)
+    signature = auth_header[len("HMAC-SHA256 "):]
     data = request.get_json()
-    if data["type"] == ImageGenerateType:
-        err = discord_api.generate_image(data)
-    elif data["type"] == ImagePreferRemixType:
-        err = discord_api.prefer_remix(data)
-    elif data["type"] == ImageRemixType:
-        err = discord_api.image_remix(data)
-    elif data["type"] == ImageAskType:
-        err = discord_api.ask_question(data)
-    elif data["type"] == ImageInfoType:
-        err = discord_api.view_information(data)
-    elif data["type"] == ImageFastType:
-        err = discord_api.switch_to_fast_mode(data)
-    elif data["type"] == ImageRelaxType:
-        err = discord_api.switch_to_relax_mode(data)
-    elif data["type"] == ImageVariationType:
-        err = discord_api.image_variation(data)
-    elif data["type"] == ImageDescribeType:
-        err = discord_api.describe_image(data)
-    elif data["type"] == ImageBlendType:
-        err = discord_api.blend_images(data)
-    elif data["type"] == ImageShortenType:
-        err = discord_api.shorten_prompt(data)
-    elif data["type"] == ImageShowType:
-        err = discord_api.show_image(data)
+    message = f"{data['type']}+{data['nonce']}"
+    print(verify_hmac_signature(message, signature, glovar.secret_key))
+    if verify_hmac_signature(message, signature, glovar.secret_key):
+        if data["type"] == ImageGenerateType:
+            err = discord_api.generate_image(data)
+        elif data["type"] == ImagePreferRemixType:
+            err = discord_api.prefer_remix(data)
+        elif data["type"] == ImageRemixType:
+            err = discord_api.image_remix(data)
+        elif data["type"] == ImageAskType:
+            err = discord_api.ask_question(data)
+        elif data["type"] == ImageInfoType:
+            err = discord_api.view_information(data)
+        elif data["type"] == ImageFastType:
+            err = discord_api.switch_to_fast_mode(data)
+        elif data["type"] == ImageRelaxType:
+            err = discord_api.switch_to_relax_mode(data)
+        elif data["type"] == ImageVariationType:
+            err = discord_api.image_variation(data)
+        elif data["type"] == ImageDescribeType:
+            err = discord_api.describe_image(data)
+        elif data["type"] == ImageBlendType:
+            err = discord_api.blend_images(data)
+        elif data["type"] == ImageShortenType:
+            err = discord_api.shorten_prompt(data)
+        elif data["type"] == ImageShowType:
+            err = discord_api.show_image(data)
+        else:
+            return jsonify({"code": 1, "msg": "unknown type"})
+
+        if err is not None:
+            return jsonify({"code": 1, "msg": str(err)})
+
+        return jsonify({"code": 0, "msg": "success"})
     else:
-        return jsonify({"code": 1, "msg": "unknown type"})
-
-    if err is not None:
-        return jsonify({"code": 1, "msg": str(err)})
-
-    return jsonify({"code": 0, "msg": "success"})
+        abort(401)
