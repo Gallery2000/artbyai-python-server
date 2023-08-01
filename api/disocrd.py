@@ -55,11 +55,16 @@ class DiscordApi:
         try:
             response = requests.post(INTERACTIONS_URL, json=data, headers=headers)
             response.raise_for_status()
-            return response.content, None
+            if response.text.strip():
+                return ValueError(response.text)
+            else:
+                return None
         except requests.exceptions.RequestException as e:
-            return None, e
+            return e
         except json.JSONDecodeError as e:
-            return None, e
+            return e
+        except Exception as e:
+            return e
 
     def upload_file(self, image_file):
         try:
@@ -179,7 +184,7 @@ class DiscordApi:
             }
         }
 
-        _, err = self.req_midjourney(request_body)
+        err = self.req_midjourney(request_body)
         return err
 
     def prefer_remix(self, params):
@@ -232,7 +237,7 @@ class DiscordApi:
             }
         }
 
-        _, err = self.req_midjourney(request_body)
+        err = self.req_midjourney(request_body)
         return err
 
     def ask_question(self, params):
@@ -268,7 +273,7 @@ class DiscordApi:
             }
         }
 
-        _, err = self.req_midjourney(request_body)
+        err = self.req_midjourney(request_body)
         return err
 
     def view_information(self, params):
@@ -301,7 +306,7 @@ class DiscordApi:
             }
         }
 
-        _, err = self.req_midjourney(request_body)
+        err = self.req_midjourney(request_body)
         return err
 
     def switch_to_fast_mode(self, params):
@@ -334,7 +339,7 @@ class DiscordApi:
             }
         }
 
-        _, err = self.req_midjourney(request_body)
+        err = self.req_midjourney(request_body)
         return err
 
     def switch_to_relax_mode(self, params):
@@ -367,7 +372,7 @@ class DiscordApi:
             }
         }
 
-        _, err = self.req_midjourney(request_body)
+        err = self.req_midjourney(request_body)
         return err
 
     def image_variation(self, params):
@@ -386,7 +391,7 @@ class DiscordApi:
             }
         }
 
-        _, err = self.req_midjourney(request_body)
+        err = self.req_midjourney(request_body)
         return err
 
     def describe_image(self, params):
@@ -429,7 +434,7 @@ class DiscordApi:
             }
         }
 
-        _, err = self.req_midjourney(request_body)
+        err = self.req_midjourney(request_body)
         return err
 
     def blend_images(self, params):
@@ -514,7 +519,7 @@ class DiscordApi:
             }
         }
 
-        _, err = self.req_midjourney(request_body)
+        err = self.req_midjourney(request_body)
         return err
 
     def image_remix(self, params):
@@ -579,7 +584,7 @@ class DiscordApi:
             }
         }
 
-        _, err = self.req_midjourney(request_body)
+        err = self.req_midjourney(request_body)
         return err
 
     def shorten_prompt(self, params):
@@ -616,7 +621,7 @@ class DiscordApi:
             }
         }
 
-        _, err = self.req_midjourney(request_body)
+        err = self.req_midjourney(request_body)
         return err
 
     def show_image(self, params):
@@ -653,5 +658,5 @@ class DiscordApi:
             }
         }
 
-        _, err = self.req_midjourney(request_body)
+        err = self.req_midjourney(request_body)
         return err
