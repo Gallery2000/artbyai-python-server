@@ -24,5 +24,9 @@ COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python
 # 复制项目文件到工作目录
 COPY . /app
 
+RUN pip install gunicorn
+
+EXPOSE 5000
+
 # 启动应用程序
-CMD [ "python", "main.py" ]
+CMD ["gunicorn", "handlers:app", "-b", "0.0.0.0:5000"]

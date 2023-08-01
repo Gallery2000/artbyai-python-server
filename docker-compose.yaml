@@ -4,4 +4,6 @@ services:
     image: artbyai-py
     container_name: artbyai-py
     build: .
+    ports:
+      - "5000:5000"
 
