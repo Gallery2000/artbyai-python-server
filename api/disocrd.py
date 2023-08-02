@@ -3,6 +3,7 @@ import os
 import re
 
 import requests
+from loguru import logger
 
 import glovar
 import utils
@@ -51,11 +52,12 @@ class DiscordApi:
             "Content-Type": "application/json",
             "Authorization": glovar.discord.user_token,
         }
-        print(json.dumps(data))
+        logger.info(json.dumps(data))
         try:
             response = requests.post(INTERACTIONS_URL, json=data, headers=headers)
             if response.text == "":
                 return None
+            logger.error(response.text)
             return ValueError(response.text.encode("utf-8").decode("unicode_escape"))
         except Exception as e:
             return e
@@ -554,8 +556,8 @@ class DiscordApi:
             data_custom_id = f"MJ::RemixModal::{params['msgHash']}::1::{vary}"
             com_custom_id = "MJ::RemixModal::new_prompt"
 
-        print("data_custom_id: " + data_custom_id)
-        print("com_custom_id: " + com_custom_id)
+        logger.info("data_custom_id: " + data_custom_id)
+        logger.info("com_custom_id: " + com_custom_id)
 
         request_body = {
             "type": 5,

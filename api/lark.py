@@ -22,7 +22,7 @@ class LarkApi:
         except requests.HTTPError as e:
             logger.error("Callback Discord " + str(glovar.discord_id) + " error: " + str(e))
         except requests.exceptions.RequestException as e:
-            print("Error during request:" + str(e))
+            logger.error("Error during request:" + str(e))
         except Exception as e:
             logger.error("Callback Discord " + str(glovar.discord_id) + " error: " + str(e))
 
@@ -41,7 +41,7 @@ class LarkApi:
         except requests.HTTPError as e:
             logger.error("Update Discord SSID " + str(glovar.discord_id) + " error: " + str(e))
         except requests.exceptions.RequestException as e:
-            print("Error during request:" + str(e))
+            logger.error("Error during request:" + str(e))
         except Exception as e:
             logger.error("Callback Discord " + str(glovar.discord_id) + " error: " + str(e))
 
@@ -60,6 +60,6 @@ class LarkApi:
         except requests.HTTPError as e:
             logger.error("Get Discord " + str(glovar.discord_id) + " error: " + str(e))
         except requests.exceptions.RequestException as e:
-            print("Error during request:" + str(e))
+            logger.error("Error during request:" + str(e))
         except Exception as e:
             logger.error("Callback Discord " + str(glovar.discord_id) + " error: " + str(e))

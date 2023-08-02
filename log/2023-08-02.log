@@ -1,0 +1,103 @@
+2023-08-02 18:55:14.620 | INFO     | api.lark:get_discord:56 - Get Discord 5 success
+2023-08-02 18:55:19.795 | INFO     | api.lark:update_discord_ssid:38 - Update Discord 5 SSID success
+2023-08-02 18:56:33.344 | INFO     | api.lark:get_discord:56 - Get Discord 5 success
+2023-08-02 18:56:37.555 | INFO     | api.lark:update_discord_ssid:38 - Update Discord 5 SSID success
+2023-08-02 18:58:01.006 | INFO     | api.lark:get_discord:56 - Get Discord 5 success
+2023-08-02 18:58:05.327 | INFO     | api.lark:update_discord_ssid:38 - Update Discord 5 SSID success
+2023-08-02 18:58:27.200 | INFO     | api.lark:get_discord:56 - Get Discord 5 success
+2023-08-02 18:58:31.440 | INFO     | api.lark:update_discord_ssid:38 - Update Discord 5 SSID success
+2023-08-02 18:58:57.346 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 18:59:09.442 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 18:59:09.883 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 18:59:12.120 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 18:59:12.710 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 18:59:14.662 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 18:59:15.614 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 18:59:17.072 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 18:59:17.574 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 18:59:19.916 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 19:05:08.598 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 19:05:09.181 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 19:05:16.150 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 19:05:16.441 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 19:05:16.693 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 19:05:32.176 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 19:05:32.501 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 19:05:34.587 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 19:05:34.919 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 19:05:37.455 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 19:05:40.150 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 19:05:42.951 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 19:05:45.757 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 19:05:48.659 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 19:05:51.609 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 19:05:54.327 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 21:30:17.142 | ERROR    | api.lark:update_discord_ssid:42 - Update Discord SSID 5 error: 404 Client Error: Not Found for url: http://lark.cpolar.top/manage/updateManDiscordSSID
+2023-08-02 21:38:31.397 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 21:38:31.517 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 21:38:35.521 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 21:38:56.627 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 21:38:56.751 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 21:38:57.611 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 21:38:57.838 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 21:38:58.066 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 21:41:01.311 | ERROR    | api.lark:get_discord:63 - Error during request:HTTPConnectionPool(host='lark.cpolar.top', port=80): Read timed out. (read timeout=10)
+2023-08-02 21:41:01.311 | ERROR    | __main__:<module>:27 - Discord 5 not found
+2023-08-02 21:41:16.035 | INFO     | api.lark:get_discord:56 - Get Discord 5 success
+2023-08-02 21:41:20.745 | INFO     | api.lark:update_discord_ssid:38 - Update Discord 5 SSID success
+2023-08-02 21:41:26.387 | INFO     | api.disocrd:req_midjourney:55 - {"type": 2, "guild_id": "1122174263189839952", "channel_id": "1122174263777050688", "application_id": "936929561302675456", "session_id": "42349f613bba068bc16782d318811f00", "nonce": "1136292669434172419", "data": {"version": "990020489659449405", "id": "990020489659449404", "name": "show", "type": 1, "options": [{"name": "job_id", "type": 3, "value": "decda623-2c3f-4ee8-ac3c-f6afb781e372"}], "application_command": {"id": "990020489659449404", "application_id": "936929561302675456", "version": "990020489659449405", "contexts": null, "default_permission": true, "default_member_permissions": null, "type": 1, "nsfw": false, "name": "show", "description": "Shows the job view based on job id.", "dm_permission": true, "options": [{"name": "prompt", "description": "The prompt to shorten.", "type": 3, "required": true}]}, "attachments": []}}
+2023-08-02 21:41:30.430 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 21:41:30.535 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 21:41:31.307 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 21:41:31.746 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 21:41:32.397 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 21:42:00.914 | INFO     | api.disocrd:req_midjourney:55 - {"type": 2, "guild_id": "1122174263189839952", "channel_id": "1122174263777050688", "application_id": "936929561302675456", "session_id": "42349f613bba068bc16782d318811f00", "nonce": "1136292817388471243", "data": {"version": "990020489659449405", "id": "990020489659449404", "name": "show", "type": 1, "options": [{"name": "job_id", "type": 3, "value": "decda623-2c3f-4ee8-ac3c-f6afb781e372"}], "application_command": {"id": "990020489659449404", "application_id": "936929561302675456", "version": "990020489659449405", "contexts": null, "default_permission": true, "default_member_permissions": null, "type": 1, "nsfw": false, "name": "show", "description": "Shows the job view based on job id.", "dm_permission": true, "options": [{"name": "prompt", "description": "The prompt to shorten.", "type": 3, "required": true}]}, "attachments": []}}
+2023-08-02 21:42:04.923 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 21:42:04.952 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 21:42:05.178 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 21:42:05.414 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 21:42:06.098 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:06:33.822 | INFO     | api.disocrd:req_midjourney:55 - {"type": 2, "guild_id": "1122174263189839952", "channel_id": "1122174263777050688", "application_id": "936929561302675456", "session_id": "42349f613bba068bc16782d318811f00", "nonce": "1136299002036544142", "data": {"version": "990020489659449405", "id": "990020489659449404", "name": "show", "type": 1, "options": [{"name": "job_id", "type": 3, "value": "decda623-2c3f-4ee8-ac3c-f6afb781e372"}], "application_command": {"id": "990020489659449404", "application_id": "936929561302675456", "version": "990020489659449405", "contexts": null, "default_permission": true, "default_member_permissions": null, "type": 1, "nsfw": false, "name": "show", "description": "Shows the job view based on job id.", "dm_permission": true, "options": [{"name": "prompt", "description": "The prompt to shorten.", "type": 3, "required": true}]}, "attachments": []}}
+2023-08-02 22:06:38.159 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:06:53.280 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:07:44.961 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:20:41.042 | INFO     | api.disocrd:req_midjourney:55 - {"type": 2, "guild_id": "1122174263189839952", "channel_id": "1122174263777050688", "application_id": "936929561302675456", "session_id": "42349f613bba068bc16782d318811f00", "nonce": "1136302555509960343", "data": {"version": "990020489659449405", "id": "990020489659449404", "name": "show", "type": 1, "options": [{"name": "job_id", "type": 3, "value": "decda623-2c3f-4ee8-ac3c-f6afb781e372"}], "application_command": {"id": "990020489659449404", "application_id": "936929561302675456", "version": "990020489659449405", "contexts": null, "default_permission": true, "default_member_permissions": null, "type": 1, "nsfw": false, "name": "show", "description": "Shows the job view based on job id.", "dm_permission": true, "options": [{"name": "prompt", "description": "The prompt to shorten.", "type": 3, "required": true}]}, "attachments": []}}
+2023-08-02 22:20:55.230 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:20:55.455 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:20:59.533 | INFO     | api.lark:update_discord_ssid:38 - Update Discord 5 SSID success
+2023-08-02 22:21:22.415 | INFO     | api.disocrd:req_midjourney:55 - {"type": 2, "guild_id": "1122174263189839952", "channel_id": "1122174263777050688", "application_id": "936929561302675456", "session_id": "42349f613bba068bc16782d318811f00", "nonce": "1136302729078597071", "data": {"version": "990020489659449405", "id": "990020489659449404", "name": "show", "type": 1, "options": [{"name": "job_id", "type": 3, "value": "decda623-2c3f-4ee8-ac3c-f6afb781e372"}], "application_command": {"id": "990020489659449404", "application_id": "936929561302675456", "version": "990020489659449405", "contexts": null, "default_permission": true, "default_member_permissions": null, "type": 1, "nsfw": false, "name": "show", "description": "Shows the job view based on job id.", "dm_permission": true, "options": [{"name": "prompt", "description": "The prompt to shorten.", "type": 3, "required": true}]}, "attachments": []}}
+2023-08-02 22:21:26.332 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:21:26.538 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:21:27.062 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:21:27.354 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:21:28.408 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:27:36.268 | INFO     | api.disocrd:req_midjourney:55 - {"type": 2, "guild_id": "1122174263189839952", "channel_id": "1122174263777050688", "application_id": "936929561302675456", "session_id": "42349f613bba068bc16782d318811f00", "nonce": "1136304297161367989", "data": {"version": "990020489659449405", "id": "990020489659449404", "name": "show", "type": 1, "options": [{"name": "job_id", "type": 3, "value": "decda623-2c3f-4ee8-ac3c-f6afb781e372"}], "application_command": {"id": "990020489659449404", "application_id": "936929561302675456", "version": "990020489659449405", "contexts": null, "default_permission": true, "default_member_permissions": null, "type": 1, "nsfw": false, "name": "show", "description": "Shows the job view based on job id.", "dm_permission": true, "options": [{"name": "prompt", "description": "The prompt to shorten.", "type": 3, "required": true}]}, "attachments": []}}
+2023-08-02 22:27:40.424 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:27:40.678 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:27:41.291 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:27:41.605 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:27:42.174 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:32:00.732 | INFO     | api.disocrd:req_midjourney:55 - {"type": 2, "guild_id": "1122174263189839952", "channel_id": "1122174263777050688", "application_id": "936929561302675456", "session_id": "42349f613bba068bc16782d318811f00", "nonce": "1136305406449844119", "data": {"version": "990020489659449405", "id": "990020489659449404", "name": "show", "type": 1, "options": [{"name": "job_id", "type": 3, "value": "decda623-2c3f-4ee8-ac3c-f6afb781e372"}], "application_command": {"id": "990020489659449404", "application_id": "936929561302675456", "version": "990020489659449405", "contexts": null, "default_permission": true, "default_member_permissions": null, "type": 1, "nsfw": false, "name": "show", "description": "Shows the job view based on job id.", "dm_permission": true, "options": [{"name": "prompt", "description": "The prompt to shorten.", "type": 3, "required": true}]}, "attachments": []}}
+2023-08-02 22:32:04.642 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:32:04.940 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:32:13.300 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:32:14.817 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:32:15.070 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:37:22.742 | INFO     | api.disocrd:req_midjourney:55 - {"type": 2, "guild_id": "1122174263189839952", "channel_id": "1122174263777050688", "application_id": "936929561302675456", "session_id": "42349f613bba068bc16782d318811f00", "nonce": "1136306757019868413", "data": {"version": "990020489659449405", "id": "990020489659449404", "name": "show", "type": 1, "options": [{"name": "job_id", "type": 3, "value": "decda623-2c3f-4ee8-ac3c-f6afb781e372"}], "application_command": {"id": "990020489659449404", "application_id": "936929561302675456", "version": "990020489659449405", "contexts": null, "default_permission": true, "default_member_permissions": null, "type": 1, "nsfw": false, "name": "show", "description": "Shows the job view based on job id.", "dm_permission": true, "options": [{"name": "prompt", "description": "The prompt to shorten.", "type": 3, "required": true}]}, "attachments": []}}
+2023-08-02 22:37:26.749 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:37:27.034 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:37:33.491 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:37:33.850 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:37:34.060 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:40:12.422 | INFO     | api.disocrd:req_midjourney:55 - {"type": 2, "guild_id": "1122174263189839952", "channel_id": "1122174263777050688", "application_id": "936929561302675456", "session_id": "42349f613bba068bc16782d318811f00", "nonce": "1136307468721661840", "data": {"version": "990020489659449405", "id": "990020489659449404", "name": "show", "type": 1, "options": [{"name": "job_id", "type": 3, "value": "decda623-2c3f-4ee8-ac3c-f6afb781e372"}], "application_command": {"id": "990020489659449404", "application_id": "936929561302675456", "version": "990020489659449405", "contexts": null, "default_permission": true, "default_member_permissions": null, "type": 1, "nsfw": false, "name": "show", "description": "Shows the job view based on job id.", "dm_permission": true, "options": [{"name": "prompt", "description": "The prompt to shorten.", "type": 3, "required": true}]}, "attachments": []}}
+2023-08-02 22:40:16.694 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:40:17.064 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:40:25.941 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:40:26.321 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:40:26.543 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:41:39.131 | INFO     | api.disocrd:req_midjourney:55 - {"type": 2, "guild_id": "1122174263189839952", "channel_id": "1122174263777050688", "application_id": "936929561302675456", "session_id": "42349f613bba068bc16782d318811f00", "nonce": "1136307832401391539", "data": {"version": "990020489659449405", "id": "990020489659449404", "name": "show", "type": 1, "options": [{"name": "job_id", "type": 3, "value": "decda623-2c3f-4ee8-ac3c-f6afb781e372"}], "application_command": {"id": "990020489659449404", "application_id": "936929561302675456", "version": "990020489659449405", "contexts": null, "default_permission": true, "default_member_permissions": null, "type": 1, "nsfw": false, "name": "show", "description": "Shows the job view based on job id.", "dm_permission": true, "options": [{"name": "prompt", "description": "The prompt to shorten.", "type": 3, "required": true}]}, "attachments": []}}
+2023-08-02 22:41:43.701 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:41:43.992 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:41:44.227 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:41:44.472 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:41:44.720 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success

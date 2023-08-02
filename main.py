@@ -10,6 +10,12 @@ from config import get_config
 from discord_client import MyClient
 from handlers import app
 
+if not os.path.exists('log'):
+    os.makedirs('log')
+
+log_file = os.path.join('log', '{time:YYYY-MM-DD}.log')
+logger.add(log_file, rotation="500 MB", compression="zip")
+
 config = get_config()
 
 if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
