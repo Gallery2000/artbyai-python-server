@@ -54,15 +54,9 @@ class DiscordApi:
         print(json.dumps(data))
         try:
             response = requests.post(INTERACTIONS_URL, json=data, headers=headers)
-            response.raise_for_status()
-            if response.text.strip():
-                return ValueError(response.text)
-            else:
+            if response.text == "":
                 return None
-        except requests.exceptions.RequestException as e:
-            return e
-        except json.JSONDecodeError as e:
-            return e
+            return ValueError(response.text.encode("utf-8").decode("unicode_escape"))
         except Exception as e:
             return e
 
@@ -168,7 +162,7 @@ class DiscordApi:
                     "id": "938956540159881230",
                     "application_id": APPLICATION_ID,
                     "version": "1118961510123847772",
-                    "contexts": [1, 2, 3],
+                    "contexts": [0, 1, 2],
                     "default_permission": True,
                     "default_member_permissions": None,
                     "type": 1,
@@ -205,7 +199,7 @@ class DiscordApi:
                     "id": "938956540159881230",
                     "application_id": APPLICATION_ID,
                     "version": "1118961510123847772",
-                    "contexts": [1, 2, 3],
+                    "contexts": [0, 1, 2],
                     "default_permission": True,
                     "default_member_permissions": None,
                     "type": 1,
@@ -443,7 +437,7 @@ class DiscordApi:
             options.append({
                 "type": 11,
                 "name": f"image{i + 1}",
-                "value": i + 1,
+                "value": i,
             })
 
         choices = [
@@ -460,7 +454,7 @@ class DiscordApi:
                 "required": True,
                 "type": 11,
             })
-        if params.get("prompt") is not None:
+        if params["prompt"]:
             options.append({
                 "type": 3,
                 "name": "dimensions",
@@ -483,7 +477,7 @@ class DiscordApi:
         for i, uploaded_filename in enumerate(params["uploadNames"]):
             filename = os.path.basename(uploaded_filename)
             attachments.append({
-                "id": str(i + 1),
+                "id": str(i),
                 "filename": filename,
                 "uploaded_filename": uploaded_filename,
             })
@@ -505,7 +499,7 @@ class DiscordApi:
                     "id": "1062880104792997970",
                     "application_id": APPLICATION_ID,
                     "version": "1118961510123847773",
-                    "contexts": [1, 2, 3],
+                    "contexts": [0, 1, 2],
                     "default_permission": True,
                     "default_member_permissions": None,
                     "type": 1,
