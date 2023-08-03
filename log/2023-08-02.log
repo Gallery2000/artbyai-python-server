@@ -101,3 +101,7 @@
 2023-08-02 22:41:44.227 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
 2023-08-02 22:41:44.472 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
 2023-08-02 22:41:44.720 | INFO     | api.lark:callback_discord:19 - Callback Discord 5 success
+2023-08-02 22:55:58.825 | INFO     | api.disocrd:req_midjourney:55 - {"type": 2, "guild_id": "1122174263189839952", "channel_id": "1122174263777050688", "application_id": "936929561302675456", "session_id": "42349f613bba068bc16782d318811f00", "nonce": "1136311438869149316", "data": {"version": "987795926183731231", "id": "972289487818334212", "name": "fast", "type": 1, "options": [], "application_command": {"id": "972289487818334209", "application_id": "936929561302675456", "version": "987795926183731231", "contexts": null, "default_member_permissions": null, "type": 1, "nsfw": false, "name": "fast", "description": "Switch to fast mode", "dm_permission": true}, "attachments": []}}
+2023-08-02 22:56:09.939 | ERROR    | api.lark:callback_discord:25 - Error during request:HTTPConnectionPool(host='lark.cpolar.top', port=80): Read timed out. (read timeout=10)
+2023-08-02 22:56:10.139 | ERROR    | api.lark:callback_discord:25 - Error during request:HTTPConnectionPool(host='lark.cpolar.top', port=80): Read timed out. (read timeout=10)
+2023-08-03 09:11:12.801 | ERROR    | api.lark:update_discord_ssid:42 - Update Discord SSID 5 error: 404 Client Error: Not Found for url: http://lark.cpolar.top/manage/updateManDiscordSSID
