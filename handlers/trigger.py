@@ -56,7 +56,7 @@ def midjourney():
     signature = auth_header[len("HMAC-SHA256 "):]
     data = request.get_json()
     message = f"{data['type']}+{data['nonce']}"
-    
+
     if verify_hmac_signature(message, signature, glovar.secret_key):
         if data["type"] == ImageGenerateType:
             err = discord_api.generate_image(data)
