@@ -14,5 +14,6 @@ WORKDIR /app
 EXPOSE 5000
 ENV PYTHONUNBUFFERED 1
 ENV WERKZEUG_RUN_MAIN='true'
+ENV TZ = 'Asia/Shanghai'
 
 CMD ["gunicorn", "--bind", ":5000", "--workers", "1", "main:app"]
