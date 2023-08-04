@@ -9,4 +9,5 @@ services:
     restart: unless-stopped
     volumes:
       - ./log:/app/log
+      - ./config.yaml:/app/config.yaml
 
