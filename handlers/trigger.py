@@ -15,6 +15,7 @@ ImageFastType = "fast"
 ImageRelaxType = "relax"
 ImageRemixType = "remix"
 ImageInfoType = "info"
+ImageSettingsType = "settings"
 ImagePreferRemixType = "prefer_remix"
 
 app = Flask(__name__)
@@ -82,6 +83,8 @@ def midjourney():
             err = discord_api.shorten_prompt(data)
         elif data["type"] == ImageShowType:
             err = discord_api.show_image(data)
+        elif data["type"] == ImageSettingsType:
+            err = discord_api.get_settings(data)
         else:
             return jsonify({"code": 1, "msg": "unknown type"})
 

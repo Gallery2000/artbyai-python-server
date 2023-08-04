@@ -13,6 +13,8 @@ RICH_TEXT = "RichText"
 DIRECT_MESSAGE = "DirectMessage"
 GENERATING = "Generating"
 INTERACTION_FINISH = "InteractionFinish"
+SETTINGS = "Settings"
+INFORMATION = "Information"
 
 
 class MyClient(discord.Client):
@@ -64,6 +66,7 @@ class MyClient(discord.Client):
                     "emoji": button.emoji.name if button.emoji else None,
                     "label": button.label,
                     "custom_id": button.custom_id,
+                    "style": button.style,
                 })
 
         if str(message.channel.id) == glovar.discord.dm_channel_id:
@@ -121,6 +124,7 @@ class MyClient(discord.Client):
                         "label": button["label"] if "label" in button else "",
                         "emoji": button["emoji"]["name"] if "emoji" in button and button["emoji"] else None,
                         "custom_id": button["custom_id"] if "custom_id" in button else "",
+                        "style": button["style"] if "style" in button else 0,
                     })
 
             if str(payload.channel_id) == glovar.discord.channel_id:
@@ -139,10 +143,15 @@ class MyClient(discord.Client):
             self.callback_message(PLAINTEXT, msg_data)
         elif "/prefer remix" in msg_data["content"]:
             self.callback_message(PLAINTEXT, msg_data)
+        elif "Adjust your settings here. Current suffix:" in msg_data["content"]:
+            self.callback_message(SETTINGS, msg_data)
         elif payload.data['attachments']:
             self.callback_message(GENERATING, msg_data)
         elif payload.data['embeds'] and payload.data['embeds'][0]['type'] == "rich":
-            self.callback_message(RICH_TEXT, msg_data)
+            if 'Your info' in payload.data['embeds'][0]['title']:
+                self.callback_message(INFORMATION, msg_data)
+            else:
+                self.callback_message(RICH_TEXT, msg_data)
         elif msg_data["content"]:
             self.callback_message(PLAINTEXT, msg_data)
 

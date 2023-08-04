@@ -146,6 +146,39 @@ class DiscordApi:
         except requests.exceptions.RequestException as e:
             return None, e
 
+    def get_settings(self, params):
+        request_body = {
+            "type": 2,
+            "guild_id": glovar.discord.guild_id,
+            "channel_id": glovar.discord.channel_id,
+            "application_id": APPLICATION_ID,
+            "session_id": glovar.discord.session_id,
+            "nonce": params["nonce"],
+            "data": {
+                "version": "1118961510123847778",
+                "id": "1000850743479255081",
+                "name": "settings",
+                "type": 1,
+                "options": [],
+                "application_command": {
+                    "id": "1000850743479255081",
+                    "application_id": APPLICATION_ID,
+                    "version": "1118961510123847778",
+                    "contexts": [0, 1, 2],
+                    "default_permission": True,
+                    "default_member_permissions": None,
+                    "type": 1,
+                    "nsfw": False,
+                    "name": "imagine",
+                    "description": "View and adjust your personal settings.",
+                    "dm_permission": True,
+                },
+                "attachments": []
+            }
+        }
+        err = self.req_midjourney(request_body)
+        return err
+
     def generate_image(self, params):
         request_body = {
             "type": 2,
