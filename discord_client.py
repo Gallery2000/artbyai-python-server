@@ -148,7 +148,7 @@ class MyClient(discord.Client):
         elif payload.data['attachments']:
             self.callback_message(GENERATING, msg_data)
         elif payload.data['embeds'] and payload.data['embeds'][0]['type'] == "rich":
-            if 'Your info' in payload.data['embeds'][0]['title']:
+            if 'title' in payload.data['embeds'][0] and 'Your info' in payload.data['embeds'][0]['title']:
                 self.callback_message(INFORMATION, msg_data)
             else:
                 self.callback_message(RICH_TEXT, msg_data)
