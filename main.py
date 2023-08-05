@@ -18,6 +18,8 @@ logger.add(log_file, rotation="500 MB", compression="zip")
 
 config = get_config()
 
+logger.info('base url: ' + config["base_url"])
+
 if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
     glovar.discord_id = config["discord_id"]
     glovar.lark_api = LarkApi(config["base_url"])

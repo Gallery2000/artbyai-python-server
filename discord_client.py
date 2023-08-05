@@ -66,7 +66,7 @@ class MyClient(discord.Client):
                     "emoji": button.emoji.name if button.emoji else None,
                     "label": button.label,
                     "custom_id": button.custom_id,
-                    "style": button.style,
+                    "style": button.style.value,
                 })
 
         if str(message.channel.id) == glovar.discord.dm_channel_id:
