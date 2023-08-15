@@ -91,6 +91,12 @@ def midjourney():
         if err is not None:
             return jsonify({"code": 1, "msg": str(err)})
 
+        # random_timer = RandomTimer(callback_function=glovar.lark_api.callback_discord({
+        #     "type": "FirstTrigger",
+        #     "nonce": data["nonce"]
+        # }))
+        # random_timer.start_timer()
+
         return jsonify({"code": 0, "msg": "success"})
     else:
         abort(401)
